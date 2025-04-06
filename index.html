@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Telekung Maryam</title>
+  
+  <!-- Font cantik dari Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      color: #111;
+    }
+
+    header {
+      background-color: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: #a5524d;
+      letter-spacing: 1px;
+    }
+
+    .logo .highlight {
+      color: #d88c9a;
+      font-style: italic;
+    }
+
+    nav a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: #e60012;
+    }
+
+    .banner {
+      width: 100%;
+      height: 400px;
+      background: linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3)),
+        url('https://images.uniqlo.com/image/upload/v1677040007/uq/homepage/2023fw/hero_desktop.jpg') center/cover no-repeat;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      padding: 50px;
+      background-color: #ffffff;
+    }
+
+    .product {
+      border: none;
+      padding: 15px;
+      text-align: center;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+
+    .product img {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .color-select {
+      margin: 10px 0;
+      font-size: 14px;
+    }
+
+    table.color-table {
+      width: 100%;
+      margin-top: 10px;
+      border-collapse: collapse;
+    }
+
+    table.color-table td {
+      padding: 5px;
+      text-align: center;
+    }
+
+    .color-option {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      cursor: pointer;
+      transition: transform 0.2s ease, border 0.2s ease;
+    }
+
+    .color-option:hover {
+      transform: scale(1.2);
+      border-color: #999;
+    }
+
+    .color-option.selected {
+      border: 2px solid #e60012;
+      transform: scale(1.3);
+    }
+
+    .footer {
+      background: #ffffff;
+      padding: 20px;
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    @media (max-width: 600px) {
+      table.color-table td {
+        padding: 4px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="logo">Telekung <span class="highlight">Maryam</span></div>
+    <nav>
+      <a href="#">Home</a>
+      <a href="https://t.me/+c6TEu_qhxTAzZDM1">Testimoni</a>
+      <a href="https://shopee.com.my/mamaaryan12?categoryId=100014&entryPoint=ShopByPDP&itemId=7877946314">Link Pembelian</a>
+    </nav>
+  </header>
+
+  <div class="banner"></div>
+
+  <section class="products" id="product-list">
+    <!-- Produk akan diisi dengan JavaScript -->
+  </section>
+
+  <div class="footer">
+    &copy; 2025 Telekung Maryam. All rights reserved.
+  </div>
+
+  <script>
+const products = [
+  {
+    name: "Telekung Cotton Maryam Sedondon Budak Dewasa",
+    colors: [
+      { code: "#f3f6fb", img: "https://down-my.img.susercontent.com/file/8d652b3b261af07b13f3a5c693addd7e@resize_w450_nl.webp" },
+      { code: "#ffc5d3", img: "https://down-my.img.susercontent.com/file/ae98c9e70673f8ba4b8c978a729a82c7@resize_w450_nl.webp" },
+      { code: "#89cff0", img: "Telekung Cotton Maryam Sedondon Budak Dewasa-Baby blue.png" }
+    ]
+  },
+  {
+    name: "Telekung Soft awning Budak Dewasa 1tahun 12tahun",
+    colors: [
+      { code: "#ffc5d3", img: "https://down-my.img.susercontent.com/file/my-11134207-7r98r-lmtpiatni1lic2@resize_w450_nl.webp" },
+      { code: "#c9a185", img: "https://down-my.img.susercontent.com/file/my-11134207-7rasb-m5n1d19mfm8j2b.webp" },
+      { code: "#824f4f", img: "https://down-my.img.susercontent.com/file/my-11134207-7r98p-lmtpiatnnnvaa7.webp" }
+    ]
+  },
+  {
+    name: "Telekung Kanak-Kanak Sendondon Ibu Anak",
+    colors: [
+      { code: "#f1ebe0", img: "https://down-my.img.susercontent.com/file/98bb5b94158616254af58eab2dd40cec@resize_w450_nl.webp" },
+      { code: "#040720", img: "https://down-my.img.susercontent.com/file/3ded66d69455df3ef9b55edb9a1e6aa1@resize_w450_nl.webp" },
+      { code: "#fffafa", img: "https://down-my.img.susercontent.com/file/my-11134207-7rasj-m77hrlj1ph9e01@resize_w450_nl.webp" }
+    ]
+  },
+  {
+    name: "Telekung Kanak-Kanak Maryam ",
+    colors: [
+      { code: "#000000", img: "https://down-my.img.susercontent.com/file/65e574623a4f0a3a0b129bb0c8d7c5df.webp" },
+      { code: "#FFFFFF", img: "https://down-my.img.susercontent.com/file/c86967eaba53f3128b3e584b4a16636c@resize_w450_nl.webp" },
+      { code: "#fffafa", img: "https://down-my.img.susercontent.com/file/b70b306fde6b06993194cb6a8c62aea7.webp" }
+    ]
+  },
+  {
+    name: "Telekung Simple Budak Plain",
+    colors: [
+      { code: "#FFFFFF", img: "https://down-my.img.susercontent.com/file/b70b306fde6b06993194cb6a8c62aea7@resize_w450_nl.webp" },
+      { code: "#c9a185", img: "https://down-my.img.susercontent.com/file/26c67016644a693c2ac613df87ecc0ac@resize_w450_nl.webp" },
+      { code: "#000000", img: "https://down-my.img.susercontent.com/file/65e574623a4f0a3a0b129bb0c8d7c5df@resize_w450_nl.webp" }
+    ]
+  },
+
+
+];
+
+
+    const sizes = ["S", "M", "L", "XL"];
+    const productList = document.getElementById("product-list");
+
+    products.forEach((p, index) => {
+      const productCard = document.createElement("div");
+      productCard.className = "product";
+      const productId = `product-${index}`;
+
+      let colorCells = p.colors.map((color, i) => `
+        <td>
+          <span 
+            class="color-option" 
+            style="background:${color.code}" 
+            onclick="selectColor('${productId}', ${index}, ${i})"
+            id="${productId}-color-${i}"
+          ></span>
+        </td>
+      `).join("");
+
+      productCard.innerHTML = `
+        <img id="${productId}-img" src="${p.colors[0].img}" alt="${p.name}" />
+        <h3>${p.name}</h3>
+
+        <div class="color-select">
+          <label>Warna:</label>
+          <table class="color-table">
+            <tr>
+              ${colorCells}
+            </tr>
+          </table>
+        </div>
+      `;
+      productList.appendChild(productCard);
+    });
+
+    function selectColor(productId, productIndex, colorIndex) {
+      const colorButtons = document.querySelectorAll(`[id^="${productId}-color-"]`);
+      colorButtons.forEach(btn => btn.classList.remove("selected"));
+      const selectedBtn = document.getElementById(`${productId}-color-${colorIndex}`);
+      selectedBtn.classList.add("selected");
+
+      const newImg = products[productIndex].colors[colorIndex].img;
+      const imgEl = document.getElementById(`${productId}-img`);
+      
+      imgEl.style.opacity = 0.2;
+      setTimeout(() => {
+        imgEl.src = newImg;
+        imgEl.style.opacity = 1;
+      }, 150);
+    }
+  </script>
+</body>
+</html>
