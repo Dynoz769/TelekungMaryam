@@ -139,11 +139,57 @@
       border-top: 1px solid #e0e0e0;
     }
 
-    @media (max-width: 600px) {
-      table.color-table td {
-        padding: 4px;
-      }
-    }
+    @media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px;
+  }
+
+  nav {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  nav a {
+    font-size: 16px;
+    margin-left: 0;
+    padding: 5px 10px;
+  }
+
+  .banner {
+    height: 250px;
+    background-position: center;
+  }
+
+  .products {
+    padding: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+  }
+
+  .product img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .color-option {
+    width: 20px;
+    height: 20px;
+  }
+
+  .product h3 {
+    font-size: 16px;
+  }
+
+  .footer {
+    font-size: 12px;
+    padding: 15px;
+  }
+}
+
   </style>
 </head>
 
