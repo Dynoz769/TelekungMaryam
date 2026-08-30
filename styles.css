@@ -535,15 +535,6 @@ input:focus-visible {
     font-weight: 600;
     transition: color 0.15s ease;
 }
-.admin-shortcut .icon {
-    width: 16px;
-    height: 16px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
 .admin-shortcut:hover,
 .admin-shortcut:focus-visible {
     color: var(--brand-gold);
