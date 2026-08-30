@@ -192,6 +192,11 @@
             phoneInput?.focus();
             return;
         }
+        if (!email) {
+            showToast('Sila isi e-mel untuk checkout (diperlukan oleh gateway pembayaran).');
+            emailInput?.focus();
+            return;
+        }
 
         const items = Array.from(cart.entries()).map(([itemName, entry]) => ({ name: itemName, qty: entry.qty }));
 

@@ -1,17 +1,17 @@
 // POST /api/checkout
-// Creates a Billplz bill for the customer's cart and returns the hosted
+// Creates a ToyyibPay bill for the customer's cart and returns the hosted
 // payment page URL to redirect the browser to.
 //
 // Deploy this repo to Vercel (as its own project — the static site can stay
 // on GitHub Pages) and set these environment variables in the Vercel
 // project settings:
 //
-//   BILLPLZ_API_KEY        Secret key from Billplz dashboard > Settings > API
-//   BILLPLZ_COLLECTION_ID  The collection bills should be created in
-//   BILLPLZ_BASE_URL       https://www.billplz-sandbox.com while testing,
-//                          https://www.billplz.com once verified & live
-//   SITE_URL               https://telekungmaryam.com.my
-//   ALLOWED_ORIGIN          https://telekungmaryam.com.my (CORS allow-list)
+//   TOYYIBPAY_SECRET_KEY    User Secret Key from ToyyibPay > Profile > Get Started
+//   TOYYIBPAY_CATEGORY_CODE Category code from ToyyibPay > Category
+//   TOYYIBPAY_BASE_URL      https://dev.toyyibpay.com while testing,
+//                           https://toyyibpay.com once verified & live
+//   SITE_URL                https://telekungmaryam.com.my
+//   ALLOWED_ORIGIN           https://telekungmaryam.com.my (CORS allow-list)
 //
 // See PAYMENT_SETUP.md at the repo root for the full walkthrough.
 
@@ -35,13 +35,13 @@ module.exports = async (req, res) => {
   try {
     const { name, email, phone, items } = req.body || {};
 
-    if (!name || !phone || !Array.isArray(items) || items.length === 0) {
-      res.status(400).json({ error: 'Sila lengkapkan nama, no. telefon, dan pastikan troli tidak kosong.' });
+    if (!name || !phone || !email || !Array.isArray(items) || items.length === 0) {
+      res.status(400).json({ error: 'Sila lengkapkan nama, e-mel, no. telefon, dan pastikan troli tidak kosong.' });
       return;
     }
 
-    // Recompute the total server-side from the fixed catalog above — never
-    // trust a price the browser sends.
+    // Recompute the total server-side from the fixed catalog — never trust
+    // a price the browser sends.
     let totalSen = 0;
     const lines = [];
     for (const line of items) {
@@ -60,54 +60,60 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const apiKey = process.env.BILLPLZ_API_KEY;
-    const collectionId = process.env.BILLPLZ_COLLECTION_ID;
-    const baseUrl = process.env.BILLPLZ_BASE_URL || 'https://www.billplz-sandbox.com';
+    const secretKey = process.env.TOYYIBPAY_SECRET_KEY;
+    const categoryCode = process.env.TOYYIBPAY_CATEGORY_CODE;
+    const baseUrl = process.env.TOYYIBPAY_BASE_URL || 'https://dev.toyyibpay.com';
     const siteUrl = (process.env.SITE_URL || 'https://telekungmaryam.com.my').replace(/\/$/, '');
 
-    if (!apiKey || !collectionId) {
-      console.error('Missing BILLPLZ_API_KEY or BILLPLZ_COLLECTION_ID env var');
+    if (!secretKey || !categoryCode) {
+      console.error('Missing TOYYIBPAY_SECRET_KEY or TOYYIBPAY_CATEGORY_CODE env var');
       res.status(500).json({ error: 'Payment belum dikonfigurasi. Sila hubungi kedai.' });
       return;
     }
 
-    // callback_url must point at THIS API's own deployment (Vercel), not the
-    // storefront (SITE_URL) — the storefront on GitHub Pages has no /api/
-    // routes at all, so a webhook sent there would just 404. req.headers.host
-    // is the API's own domain (its Vercel URL, or a custom domain if you map
-    // one to this project) regardless of how it's deployed.
-    const apiHost = req.headers.host;
-    const apiOrigin = `https://${apiHost}`;
+    // billCallbackUrl must point at THIS API's own deployment (Vercel), not
+    // the storefront (SITE_URL) — the storefront on GitHub Pages has no
+    // /api/ routes at all, so a callback sent there would just 404.
+    const apiOrigin = `https://${req.headers.host}`;
+    const orderId = `TM${Date.now()}`;
 
     const body = new URLSearchParams({
-      collection_id: collectionId,
-      email: email || '',
-      mobile: phone,
-      name,
-      amount: String(totalSen),
-      description: lines.join(', ').slice(0, 200),
-      callback_url: `${apiOrigin}/api/billplz-webhook`,
-      redirect_url: `${siteUrl}/?order=complete`,
+      userSecretKey: secretKey,
+      categoryCode,
+      billName: 'Telekung Maryam Order'.slice(0, 30),
+      billDescription: lines.join(', ').slice(0, 100),
+      billPriceSetting: '1',
+      billPayorInfo: '1',
+      billAmount: String(totalSen),
+      billReturnUrl: `${siteUrl}/?order=complete`,
+      billCallbackUrl: `${apiOrigin}/api/toyyibpay-webhook`,
+      billExternalReferenceNo: orderId,
+      billTo: name,
+      billEmail: email,
+      billPhone: phone,
+      billSplitPayment: '0',
+      billPaymentChannel: '0', // 0 = FPX & credit card
+      billContentEmail: 'Terima kasih kerana membeli-belah bersama Telekung Maryam!',
+      billChargeToCustomer: '1', // customer bears the gateway fee
+      billExpiryDays: '3',
     });
 
-    const billplzRes = await fetch(`${baseUrl}/api/v3/bills`, {
+    const tyRes = await fetch(`${baseUrl}/index.php/api/createBill`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: 'Basic ' + Buffer.from(`${apiKey}:`).toString('base64'),
-      },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: body.toString(),
     });
 
-    const data = await billplzRes.json();
+    const data = await tyRes.json().catch(() => null);
+    const billCode = Array.isArray(data) && data[0] && data[0].BillCode;
 
-    if (!billplzRes.ok) {
-      console.error('Billplz error:', data);
+    if (!billCode) {
+      console.error('ToyyibPay error:', data);
       res.status(502).json({ error: 'Gagal cipta bil pembayaran. Sila cuba lagi sebentar.' });
       return;
     }
 
-    res.status(200).json({ url: data.url, billId: data.id });
+    res.status(200).json({ url: `${baseUrl}/${billCode}`, billCode, orderId });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ralat server. Sila cuba lagi.' });
