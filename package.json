@@ -1,0 +1,8 @@
+{
+  "name": "telekung-maryam-api",
+  "private": true,
+  "description": "Serverless payment API for telekungmaryam.com.my (deployed on Vercel, alongside the static site on GitHub Pages).",
+  "engines": {
+    "node": ">=18"
+  }
+}

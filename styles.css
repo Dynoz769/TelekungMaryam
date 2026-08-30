@@ -736,7 +736,31 @@ input:focus-visible {
     font-weight: 800;
     font-size: 1.1rem;
 }
+.checkout-fields {
+    display: grid;
+    gap: 8px;
+}
+.checkout-fields input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--beige);
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+.checkout-fields input:focus {
+    outline: none;
+    border-color: var(--green);
+    background: #fff;
+}
 .cart-checkout { width: 100%; }
+.cart-checkout:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.checkout-note {
+    text-align: center;
+    font-size: 0.78rem;
+    margin: 0;
+}
 
 /* Back to top */
 .back-to-top {

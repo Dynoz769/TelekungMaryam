@@ -1,4 +1,11 @@
 (() => {
+    /* ---------- Payment API config ----------
+     * TODO: after deploying the api/ folder to Vercel (see PAYMENT_SETUP.md),
+     * replace this with your deployment's URL, e.g.
+     * 'https://telekung-maryam-api.vercel.app'. Leave as '' to keep
+     * checkout disabled (shows a "belum tersedia" message) until then. */
+    const API_BASE = '';
+
     /* ---------- Toast ---------- */
     const toast = document.getElementById('toast');
     let toastTimer;
@@ -158,12 +165,62 @@
         closeCart();
         closeMobileNav();
     });
-    cartCheckout?.addEventListener('click', () => {
+    cartCheckout?.addEventListener('click', async () => {
         if (cart.size === 0) {
             showToast('Troli anda masih kosong.');
             return;
         }
-        showToast('Checkout belum tersedia lagi. Hubungi kami untuk pesanan!');
+        if (!API_BASE) {
+            showToast('Payment belum disambung. Sila hubungi kedai untuk pesanan buat masa ini.');
+            return;
+        }
+
+        const nameInput = document.getElementById('checkout-name');
+        const phoneInput = document.getElementById('checkout-phone');
+        const emailInput = document.getElementById('checkout-email');
+        const name = nameInput?.value.trim() || '';
+        const phone = phoneInput?.value.trim() || '';
+        const email = emailInput?.value.trim() || '';
+
+        if (!name) {
+            showToast('Sila isi nama penuh untuk checkout.');
+            nameInput?.focus();
+            return;
+        }
+        if (!phone) {
+            showToast('Sila isi no. telefon untuk checkout.');
+            phoneInput?.focus();
+            return;
+        }
+
+        const items = Array.from(cart.entries()).map(([itemName, entry]) => ({ name: itemName, qty: entry.qty }));
+
+        const originalLabel = cartCheckout.textContent;
+        cartCheckout.disabled = true;
+        cartCheckout.textContent = 'Memproses...';
+
+        try {
+            const resp = await fetch(`${API_BASE}/api/checkout`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, phone, email, items }),
+            });
+            const data = await resp.json().catch(() => ({}));
+
+            if (!resp.ok || !data.url) {
+                showToast(data.error || 'Gagal mulakan pembayaran. Sila cuba lagi.');
+                cartCheckout.disabled = false;
+                cartCheckout.textContent = originalLabel;
+                return;
+            }
+
+            // Hand off to Billplz's hosted payment page (FPX / DuitNow / card).
+            window.location.href = data.url;
+        } catch (err) {
+            showToast('Tiada sambungan ke server pembayaran. Sila cuba lagi.');
+            cartCheckout.disabled = false;
+            cartCheckout.textContent = originalLabel;
+        }
     });
 
     /* ---------- Mobile nav drawer ---------- */
@@ -288,4 +345,11 @@
     });
 
     renderCart();
+
+    /* ---------- Return from Billplz's payment page ---------- */
+    const returnParams = new URLSearchParams(window.location.search);
+    if (returnParams.get('order') === 'complete') {
+        showToast('Terima kasih! Pesanan anda sedang diproses.');
+        window.history.replaceState({}, '', window.location.pathname);
+    }
 })();
