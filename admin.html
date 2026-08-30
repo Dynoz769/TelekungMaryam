@@ -102,6 +102,35 @@
         .add-item-btn { margin-top: 4px; }
         .image-field { display: grid; gap: 6px; margin-top: 4px; }
         .image-field label { font-size: 0.85rem; font-weight: 700; color: var(--muted); }
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            background: var(--beige);
+            padding: 12px 0;
+            margin-bottom: 6px;
+            z-index: 5;
+        }
+        .admin-tab-btn {
+            padding: 9px 16px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--muted);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+        .admin-tab-btn:hover { background: var(--brand-mint); }
+        .admin-tab-btn.is-active {
+            background: var(--brand-green);
+            color: var(--brand-gold);
+            border-color: var(--brand-green);
+        }
+        .tab-panel[hidden] { display: none; }
     </style>
 </head>
 <body>
@@ -121,67 +150,107 @@
         </section>
 
         <section id="panel-section" hidden>
-            <div class="admin-card">
-                <h2>Produk Sedia Ada</h2>
-                <p class="muted-small">Tukar harga, harga asal, label, atau gambar — klik "Simpan" pada setiap produk untuk hantar perubahan.</p>
-                <div id="product-list"><p class="muted">Memuatkan...</p></div>
+            <nav class="admin-tabs" id="admin-tabs">
+                <button type="button" class="admin-tab-btn is-active" data-tab="produk">Produk</button>
+                <button type="button" class="admin-tab-btn" data-tab="hero">Pengumuman &amp; Hero</button>
+                <button type="button" class="admin-tab-btn" data-tab="cerita">Cerita &amp; Hadiah</button>
+                <button type="button" class="admin-tab-btn" data-tab="custom">Custom &amp; Jenama</button>
+                <button type="button" class="admin-tab-btn" data-tab="kedai">Kedai</button>
+                <button type="button" class="admin-tab-btn" data-tab="footer">Bantuan &amp; Footer</button>
+            </nav>
+
+            <div class="tab-panel" data-tab-panel="produk">
+                <div class="admin-card">
+                    <h2>Produk Sedia Ada</h2>
+                    <p class="muted-small">Tukar harga, harga asal, label, atau gambar — klik "Simpan" pada setiap produk untuk hantar perubahan.</p>
+                    <div id="product-list"><p class="muted">Memuatkan...</p></div>
+                </div>
+
+                <div class="admin-card">
+                    <h2>Tambah Produk Baharu</h2>
+                    <form id="add-form" class="field-grid">
+                        <label>Nama Produk <input name="name" required></label>
+                        <label>Harga (RM) <input name="price" type="number" step="0.01" min="0" required></label>
+                        <label>Harga Asal (RM, opsyenal — untuk papar diskaun) <input name="oldPrice" type="number" step="0.01" min="0"></label>
+                        <label>Label (contoh: -20%, Baharu) <input name="badge"></label>
+                        <label>Gambar <input name="imageFile" type="file" accept="image/png,image/jpeg,image/webp"></label>
+                        <button type="submit" class="primary-btn">Tambah Produk</button>
+                    </form>
+                    <p class="product-row-status status-error" id="add-error"></p>
+                </div>
+
+                <div class="admin-card">
+                    <h2>Header "Best Sellers"</h2>
+                    <div class="field-grid" id="content-products-header"></div>
+                </div>
+            </div>
+
+            <div class="tab-panel" data-tab-panel="hero" hidden>
+                <div class="admin-card">
+                    <h2>Bar Pengumuman</h2>
+                    <p class="muted-small">Teks paling atas laman (contoh: "A Tribute to Men...").</p>
+                    <div class="field-grid" id="content-announcement"></div>
+                </div>
+
+                <div class="admin-card">
+                    <h2>Hero (bahagian utama)</h2>
+                    <div class="field-grid" id="content-hero"></div>
+                </div>
+            </div>
+
+            <div class="tab-panel" data-tab-panel="cerita" hidden>
+                <div class="admin-card">
+                    <h2>Bahagian "Becoming Better, Every Day"</h2>
+                    <div class="field-grid" id="content-stories-header"></div>
+                    <div id="content-stories-list"></div>
+                    <button type="button" class="secondary-btn add-item-btn" id="add-story-btn">+ Tambah Kad</button>
+                </div>
+
+                <div class="admin-card">
+                    <h2>Bahagian Hadiah</h2>
+                    <div class="field-grid" id="content-gift"></div>
+                </div>
+            </div>
+
+            <div class="tab-panel" data-tab-panel="custom" hidden>
+                <div class="admin-card">
+                    <h2>Bahagian Custom</h2>
+                    <p class="muted-small">Bahagian tambahan yang admin boleh cipta sendiri — dipaparkan di laman selepas Hadiah, sebelum senarai jenama. Kosongkan semua = tak dipaparkan langsung.</p>
+                    <div id="content-custom-list"></div>
+                    <button type="button" class="secondary-btn add-item-btn" id="add-custom-btn">+ Tambah Bahagian Custom</button>
+                </div>
+
+                <div class="admin-card">
+                    <h2>Jenama Rakan Niaga</h2>
+                    <div id="content-brands-list"></div>
+                    <button type="button" class="secondary-btn add-item-btn" id="add-brand-btn">+ Tambah Jenama</button>
+                </div>
+            </div>
+
+            <div class="tab-panel" data-tab-panel="kedai" hidden>
+                <div class="admin-card">
+                    <h2>Header Kedai</h2>
+                    <div class="field-grid" id="content-stores-header"></div>
+                    <div id="content-stores-list"></div>
+                    <button type="button" class="secondary-btn add-item-btn" id="add-store-btn">+ Tambah Kedai</button>
+                </div>
+            </div>
+
+            <div class="tab-panel" data-tab-panel="footer" hidden>
+                <div class="admin-card">
+                    <h2>Bahagian Bantuan</h2>
+                    <div class="field-grid" id="content-help"></div>
+                </div>
+
+                <div class="admin-card">
+                    <h2>Footer</h2>
+                    <div class="field-grid" id="content-footer"></div>
+                </div>
             </div>
 
             <div class="admin-card">
-                <h2>Tambah Produk Baharu</h2>
-                <form id="add-form" class="field-grid">
-                    <label>Nama Produk <input name="name" required></label>
-                    <label>Harga (RM) <input name="price" type="number" step="0.01" min="0" required></label>
-                    <label>Harga Asal (RM, opsyenal — untuk papar diskaun) <input name="oldPrice" type="number" step="0.01" min="0"></label>
-                    <label>Label (contoh: -20%, Baharu) <input name="badge"></label>
-                    <label>Gambar <input name="imageFile" type="file" accept="image/png,image/jpeg,image/webp"></label>
-                    <button type="submit" class="primary-btn">Tambah Produk</button>
-                </form>
-                <p class="product-row-status status-error" id="add-error"></p>
-            </div>
-
-            <div class="admin-card">
-                <h2>Kandungan Laman</h2>
-                <p class="muted-small">Ubah teks & gambar di seluruh laman utama. Buat semua perubahan yang nak dulu, lepas tu klik "Simpan Semua Perubahan" di bawah sekali sahaja.</p>
-
-                <h3>Bar Pengumuman (paling atas laman)</h3>
-                <div class="field-grid" id="content-announcement"></div>
-
-                <h3>Hero (bahagian utama)</h3>
-                <div class="field-grid" id="content-hero"></div>
-
-                <h3>Bahagian "Becoming Better, Every Day"</h3>
-                <div class="field-grid" id="content-stories-header"></div>
-                <div id="content-stories-list"></div>
-                <button type="button" class="secondary-btn add-item-btn" id="add-story-btn">+ Tambah Kad</button>
-
-                <h3>Bahagian Hadiah</h3>
-                <div class="field-grid" id="content-gift"></div>
-
-                <h3>Bahagian Custom</h3>
-                <p class="muted-small">Bahagian tambahan yang admin boleh cipta sendiri — dipaparkan di laman selepas Hadiah, sebelum senarai jenama. Kosongkan semua = tak dipaparkan langsung.</p>
-                <div id="content-custom-list"></div>
-                <button type="button" class="secondary-btn add-item-btn" id="add-custom-btn">+ Tambah Bahagian Custom</button>
-
-                <h3>Jenama Rakan Niaga</h3>
-                <div id="content-brands-list"></div>
-                <button type="button" class="secondary-btn add-item-btn" id="add-brand-btn">+ Tambah Jenama</button>
-
-                <h3>Header "Best Sellers"</h3>
-                <div class="field-grid" id="content-products-header"></div>
-
-                <h3>Header Kedai</h3>
-                <div class="field-grid" id="content-stores-header"></div>
-                <div id="content-stores-list"></div>
-                <button type="button" class="secondary-btn add-item-btn" id="add-store-btn">+ Tambah Kedai</button>
-
-                <h3>Bahagian Bantuan</h3>
-                <div class="field-grid" id="content-help"></div>
-
-                <h3>Footer</h3>
-                <div class="field-grid" id="content-footer"></div>
-
-                <button type="button" class="primary-btn" id="save-content-btn" style="margin-top: 20px; width: 100%;">Simpan Semua Perubahan</button>
+                <p class="muted-small" style="margin-top: 0;">Butang ni simpan perubahan dari SEMUA tab di atas sekali gus — tak perlu buka setiap tab sebelum simpan.</p>
+                <button type="button" class="primary-btn" id="save-content-btn" style="width: 100%;">Simpan Semua Perubahan</button>
                 <p class="product-row-status" id="content-status"></p>
             </div>
         </section>
@@ -650,6 +719,17 @@
             } catch (err) {
                 addError.textContent = err.message;
             }
+        });
+
+        /* ---------- Tabs ---------- */
+        document.querySelectorAll('.admin-tab-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                document.querySelectorAll('.admin-tab-btn').forEach((b) => b.classList.toggle('is-active', b === btn));
+                document.querySelectorAll('.tab-panel').forEach((panel) => {
+                    panel.hidden = panel.dataset.tabPanel !== tab;
+                });
+            });
         });
 
         logoutBtn.addEventListener('click', () => {
