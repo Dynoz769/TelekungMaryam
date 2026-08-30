@@ -46,6 +46,6 @@ module.exports = async (req, res) => {
     res.status(200).json({ ok: true, path: filename });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Gagal muat naik imej. Sila cuba lagi.' });
+    res.status(500).json({ error: 'Gagal muat naik imej. Sila cuba lagi.', detail: String(err && err.message || err) });
   }
 };
