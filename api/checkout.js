@@ -11,15 +11,31 @@
 //   TOYYIBPAY_BASE_URL      https://dev.toyyibpay.com while testing,
 //                           https://toyyibpay.com once verified & live
 //   SITE_URL                https://telekungmaryam.com.my
-//   ALLOWED_ORIGIN           https://telekungmaryam.com.my (CORS allow-list)
+//   ALLOWED_ORIGIN           Comma-separated list of origins allowed to call
+//                            this API, e.g.
+//                            "https://telekungmaryam.com.my,https://dynoz769.github.io"
+//                            (useful while the custom domain's DNS isn't
+//                            live yet and the storefront is only reachable
+//                            at its default GitHub Pages URL)
 //
 // See PAYMENT_SETUP.md at the repo root for the full walkthrough.
 
 const CATALOG = require('./_catalog');
 
 module.exports = async (req, res) => {
-  const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
+  // Support a comma-separated allow-list so the storefront's custom domain
+  // and its default GitHub Pages URL can both call this API. A wildcard
+  // ('*' or unset) allows any origin -- only fine for local testing.
+  const allowList = (process.env.ALLOWED_ORIGIN || '*').split(',').map((o) => o.trim());
+  const requestOrigin = req.headers.origin;
+  const allowedOrigin = allowList.includes('*')
+    ? '*'
+    : allowList.includes(requestOrigin)
+      ? requestOrigin
+      : allowList[0]; // no match: fall back to the first configured origin (request will be rejected by the browser, which is intended)
+
   res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
+  res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
