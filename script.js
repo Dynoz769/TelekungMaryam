@@ -4,7 +4,7 @@
      * replace this with your deployment's URL, e.g.
      * 'https://telekung-maryam-api.vercel.app'. Leave as '' to keep
      * checkout disabled (shows a "belum tersedia" message) until then. */
-    const API_BASE = '';
+    const API_BASE = 'https://telekung-maryam.vercel.app';
 
     /* ---------- Toast ---------- */
     const toast = document.getElementById('toast');
