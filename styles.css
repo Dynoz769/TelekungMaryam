@@ -516,9 +516,32 @@ input:focus-visible {
     padding-top: 14px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 12px;
     flex-wrap: wrap;
     color: #cfe8da;
+}
+.admin-shortcut {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(207, 232, 218, 0.55);
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: color 0.15s ease, opacity 0.15s ease;
+}
+.admin-shortcut .icon {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.admin-shortcut:hover,
+.admin-shortcut:focus-visible {
+    color: var(--brand-gold);
 }
 
 .primary-btn, .secondary-btn {
