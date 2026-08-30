@@ -10,12 +10,21 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Langkau ke kandungan</a>
+
     <div class="announce-bar">
         <p>A Tribute to Men - Lelaki Tak Bercerita. <a href="#products">Shop Now!</a></p>
     </div>
 
     <header class="topbar">
         <div class="brand">
+            <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="Buka menu" aria-expanded="false" aria-controls="mobile-nav">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <line x1="4" y1="7" x2="20" y2="7"></line>
+                    <line x1="4" y1="12" x2="20" y2="12"></line>
+                    <line x1="4" y1="17" x2="20" y2="17"></line>
+                </svg>
+            </button>
             <span class="brand-mark">Telekung Maryam</span>
         </div>
         <nav class="nav">
@@ -26,29 +35,93 @@
             <a href="#products">Shop All</a>
         </nav>
         <div class="nav-icons">
-            <button class="icon-btn" aria-label="Search">
+            <button class="icon-btn" id="search-toggle" aria-label="Cari produk" aria-expanded="false" aria-controls="search-panel">
                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                     <circle cx="11" cy="11" r="7"></circle>
                     <line x1="16.65" y1="16.65" x2="21" y2="21"></line>
                 </svg>
             </button>
-            <button class="icon-btn" aria-label="Account">
+            <button class="icon-btn" aria-label="Akaun">
                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                     <circle cx="12" cy="8" r="4"></circle>
                     <path d="M4 20c1.8-3.5 5.1-5.5 8-5.5s6.2 2 8 5.5"></path>
                 </svg>
             </button>
-            <button class="icon-btn" aria-label="Cart">
+            <button class="icon-btn" id="cart-toggle" aria-label="Buka troli" aria-expanded="false" aria-controls="cart-drawer">
                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M6 8h12l-1 12H7L6 8z"></path>
                     <path d="M9 8a3 3 0 0 1 6 0"></path>
                 </svg>
-                <span class="bubble" id="cart-count">0</span>
+                <span class="bubble is-empty" id="cart-count">0</span>
             </button>
         </div>
     </header>
 
-    <main>
+    <div class="search-panel" id="search-panel" hidden>
+        <div class="search-panel-inner">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="16.65" y1="16.65" x2="21" y2="21"></line>
+            </svg>
+            <input type="search" id="search-input" placeholder="Cari telekung, sejadah, set hadiah...">
+            <button class="icon-btn" id="search-close" aria-label="Tutup carian">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <line x1="5" y1="5" x2="19" y2="19"></line>
+                    <line x1="19" y1="5" x2="5" y2="19"></line>
+                </svg>
+            </button>
+        </div>
+        <p class="search-hint muted" id="search-hint" role="status" aria-live="polite"></p>
+    </div>
+
+    <div class="overlay-backdrop" id="mobile-nav-backdrop" hidden></div>
+    <nav class="mobile-nav" id="mobile-nav" aria-hidden="true" aria-label="Menu mudah alih">
+        <div class="mobile-nav-head">
+            <span class="brand-mark">Telekung Maryam</span>
+            <button class="icon-btn" id="mobile-nav-close" aria-label="Tutup menu">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <line x1="5" y1="5" x2="19" y2="19"></line>
+                    <line x1="19" y1="5" x2="5" y2="19"></line>
+                </svg>
+            </button>
+        </div>
+        <a href="#products">Men</a>
+        <a href="#products">Women</a>
+        <a href="#stories">Sejadah</a>
+        <a href="#gift">Gifting</a>
+        <a href="#products">Shop All</a>
+    </nav>
+
+    <div class="overlay-backdrop" id="cart-backdrop" hidden></div>
+    <aside class="cart-drawer" id="cart-drawer" aria-hidden="true" aria-label="Troli beli-belah">
+        <div class="cart-head">
+            <h3>Troli Anda</h3>
+            <button class="icon-btn" id="cart-close" aria-label="Tutup troli">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <line x1="5" y1="5" x2="19" y2="19"></line>
+                    <line x1="19" y1="5" x2="5" y2="19"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <p class="cart-empty" id="cart-empty">Troli anda kosong. Jom mula membeli-belah!</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span>Jumlah</span>
+                <span id="cart-total">RM0</span>
+            </div>
+            <div class="checkout-fields">
+                <input type="text" id="checkout-name" placeholder="Nama penuh" autocomplete="name">
+                <input type="tel" id="checkout-phone" placeholder="No. telefon (contoh: 0121234567)" autocomplete="tel">
+                <input type="email" id="checkout-email" placeholder="E-mel (untuk resit)" autocomplete="email">
+            </div>
+            <button class="primary-btn cart-checkout" id="cart-checkout">Checkout &amp; Bayar</button>
+            <p class="checkout-note muted">Pembayaran diproses selamat melalui Billplz (FPX, DuitNow, kad).</p>
+        </div>
+    </aside>
+
+    <main id="main-content">
         <section class="hero" id="hero">
             <div class="hero-overlay"></div>
             <!-- Letak hero utama telekung anda di sini -->
@@ -69,7 +142,7 @@
             <div class="story-grid">
                 <article class="story-card">
                     <!-- Gambar telekung harian -->
-                    <img src="images/telekung-harian.jpg" alt="Telekung harian">
+                    <img loading="lazy" src="images/telekung-harian.jpg" alt="Telekung harian">
                     <div class="story-body">
                         <h3>Telekung Harian</h3>
                         <p>Material sejuk, mudah pakai, dan kekal sopan untuk solat di rumah atau pejabat.</p>
@@ -78,7 +151,7 @@
                 </article>
                 <article class="story-card">
                     <!-- Gambar telekung premium -->
-                    <img src="images/telekung-premium.jpg" alt="Telekung premium">
+                    <img loading="lazy" src="images/telekung-premium.jpg" alt="Telekung premium">
                     <div class="story-body">
                         <h3>Telekung Premium</h3>
                         <p>Renda halus, jatuh cantik, dan kemasan eksklusif untuk hadiah bermakna.</p>
@@ -87,7 +160,7 @@
                 </article>
                 <article class="story-card">
                     <!-- Gambar telekung umrah/haji -->
-                    <img src="images/telekung-umrah.jpg" alt="Telekung umrah">
+                    <img loading="lazy" src="images/telekung-umrah.jpg" alt="Telekung umrah">
                     <div class="story-body">
                         <h3>Telekung Umrah & Haji</h3>
                         <p>Ringkas, ringan, dan tidak mudah kusut—mudah dibawa sepanjang perjalanan.</p>
@@ -106,7 +179,7 @@
             </div>
             <div class="gift-visual">
                 <!-- Gambar suasana hadiah telekung -->
-                <img src="images/gift.jpg" alt="Gift moment">
+                <img loading="lazy" src="images/gift.jpg" alt="Gift moment">
             </div>
         </section>
 
@@ -130,7 +203,7 @@
                 <article class="product-card" data-item="Telekung Sakinah (Soft Rose)" data-price="239">
                     <span class="pill sale">-27%</span>
                     <!-- Gambar produk Sakinah -->
-                    <img src="images/telekung-sakinah.jpg" alt="Telekung Sakinah Soft Rose">
+                    <img loading="lazy" src="images/telekung-sakinah.jpg" alt="Telekung Sakinah Soft Rose">
                     <div class="product-info">
                         <h3>Telekung Sakinah (Soft Rose)</h3>
                         <div class="price-row">
@@ -151,7 +224,7 @@
                 <article class="product-card" data-item="Telekung Hawa Travel" data-price="199">
                     <span class="pill sale">-23%</span>
                     <!-- Gambar produk Hawa Travel -->
-                    <img src="images/telekung-hawa.jpg" alt="Telekung Hawa Travel">
+                    <img loading="lazy" src="images/telekung-hawa.jpg" alt="Telekung Hawa Travel">
                     <div class="product-info">
                         <h3>Telekung Hawa Travel</h3>
                         <div class="price-row">
@@ -172,7 +245,7 @@
                 <article class="product-card" data-item="Telekung Deluxe Lace" data-price="309">
                     <span class="pill sale">-21%</span>
                     <!-- Gambar produk Deluxe Lace -->
-                    <img src="images/telekung-deluxe.jpg" alt="Telekung Deluxe Lace">
+                    <img loading="lazy" src="images/telekung-deluxe.jpg" alt="Telekung Deluxe Lace">
                     <div class="product-info">
                         <h3>Telekung Deluxe Lace</h3>
                         <div class="price-row">
@@ -193,7 +266,7 @@
                 <article class="product-card" data-item="Telekung Basic Ivory" data-price="159">
                     <span class="pill sale">-20%</span>
                     <!-- Gambar produk Basic Ivory -->
-                    <img src="images/telekung-basic.jpg" alt="Telekung Basic Ivory">
+                    <img loading="lazy" src="images/telekung-basic.jpg" alt="Telekung Basic Ivory">
                     <div class="product-info">
                         <h3>Telekung Basic Ivory</h3>
                         <div class="price-row">
@@ -222,7 +295,7 @@
             <div class="store-grid">
                 <article class="store-card">
                     <!-- Gambar store Bangi -->
-                    <img src="images/store-bangi.jpg" alt="AMRU Bangi Sentral">
+                    <img loading="lazy" src="images/store-bangi.jpg" alt="AMRU Bangi Sentral">
                     <div class="store-body">
                         <h3>AMRU Bangi Sentral</h3>
                         <p>UG-02, Sunway Gandaria 2, Bandar Baru Bangi.</p>
@@ -232,7 +305,7 @@
                 </article>
                 <article class="store-card">
                     <!-- Gambar store Shah Alam -->
-                    <img src="images/store-shahalam.jpg" alt="AMRU Shah Alam">
+                    <img loading="lazy" src="images/store-shahalam.jpg" alt="AMRU Shah Alam">
                     <div class="store-body">
                         <h3>AMRU Shah Alam</h3>
                         <p>Pusat Komersial, Jalan Plumbum, Seksyen 7, Shah Alam.</p>
@@ -242,7 +315,7 @@
                 </article>
                 <article class="store-card">
                     <!-- Gambar store KL East -->
-                    <img src="images/store-kl.jpg" alt="AMRU KL East">
+                    <img loading="lazy" src="images/store-kl.jpg" alt="AMRU KL East">
                     <div class="store-body">
                         <h3>AMRU KL East</h3>
                         <p>Jalan Melati Utama 4, 53100 Kuala Lumpur.</p>
@@ -284,9 +357,9 @@
                 </div>
                 <div>
                     <h4>Stay Updated</h4>
-                    <form class="subscribe" onsubmit="event.preventDefault();">
-                        <input type="email" placeholder="Email">
-                        <button type="submit">→</button>
+                    <form class="subscribe" id="subscribe-form">
+                        <input type="email" id="subscribe-email" placeholder="Email" required>
+                        <button type="submit" aria-label="Langgan">→</button>
                     </form>
                     <small class="muted">*Anda bebas berhenti langgan bila-bila masa.</small>
                 </div>
@@ -299,6 +372,12 @@
     </footer>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <button class="back-to-top" id="back-to-top" aria-label="Kembali ke atas" hidden>
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="12" y1="19" x2="12" y2="5"></line>
+            <path d="M6 11l6-6 6 6"></path>
+        </svg>
+    </button>
     <script src="script.js"></script>
 </body>
 </html>
