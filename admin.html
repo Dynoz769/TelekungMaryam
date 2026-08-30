@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin — Telekung Maryam</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { background: var(--beige); min-height: 100vh; }
+        .admin-topbar {
+            background: var(--brand-green);
+            color: var(--brand-gold);
+            padding: 16px 6vw;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .admin-topbar .brand-mark { font-size: 1.4rem; letter-spacing: 0.1em; }
+        #logout-btn[hidden] { display: none; }
+        .admin-wrap { max-width: 760px; margin: 0 auto; padding: 32px 20px 60px; }
+        .admin-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 22px;
+        }
+        .admin-card h1, .admin-card h2 { margin-bottom: 14px; }
+        #login-section { max-width: 380px; margin: 80px auto; }
+        #login-section input {
+            width: 100%;
+            padding: 11px 13px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        .field-grid { display: grid; gap: 10px; }
+        .field-grid label { display: grid; gap: 4px; font-size: 0.85rem; font-weight: 700; color: var(--muted); }
+        .field-grid input {
+            padding: 9px 11px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+        .product-row {
+            display: grid;
+            grid-template-columns: 84px 1fr;
+            gap: 16px;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .product-row:last-child { border-bottom: none; }
+        .product-thumb {
+            width: 84px;
+            height: 84px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: var(--beige);
+        }
+        .product-row-actions { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; align-items: center; }
+        .product-row-status { grid-column: 1 / -1; margin: 4px 0 0; font-size: 0.85rem; font-weight: 600; }
+        .status-ok { color: var(--green); }
+        .status-error { color: #c0392b; }
+        .muted-small { font-size: 0.82rem; color: var(--muted); margin-top: -6px; }
+    </style>
+</head>
+<body>
+    <header class="admin-topbar">
+        <span class="brand-mark">Telekung Maryam — Admin</span>
+        <button class="secondary-btn" id="logout-btn" hidden>Log Keluar</button>
+    </header>
+
+    <div class="admin-wrap">
+        <section id="login-section" class="admin-card">
+            <h1>Log Masuk Admin</h1>
+            <form id="login-form">
+                <input type="password" id="login-password" placeholder="Password admin" required autocomplete="current-password">
+                <button type="submit" class="primary-btn">Log Masuk</button>
+            </form>
+            <p class="product-row-status status-error" id="login-error"></p>
+        </section>
+
+        <section id="panel-section" hidden>
+            <div class="admin-card">
+                <h2>Produk Sedia Ada</h2>
+                <p class="muted-small">Tukar harga, harga asal, label, atau gambar — klik "Simpan" pada setiap produk untuk hantar perubahan.</p>
+                <div id="product-list"><p class="muted">Memuatkan...</p></div>
+            </div>
+
+            <div class="admin-card">
+                <h2>Tambah Produk Baharu</h2>
+                <form id="add-form" class="field-grid">
+                    <label>Nama Produk <input name="name" required></label>
+                    <label>Harga (RM) <input name="price" type="number" step="0.01" min="0" required></label>
+                    <label>Harga Asal (RM, opsyenal — untuk papar diskaun) <input name="oldPrice" type="number" step="0.01" min="0"></label>
+                    <label>Label (contoh: -20%, Baharu) <input name="badge"></label>
+                    <label>Gambar <input name="imageFile" type="file" accept="image/png,image/jpeg,image/webp"></label>
+                    <button type="submit" class="primary-btn">Tambah Produk</button>
+                </form>
+                <p class="product-row-status status-error" id="add-error"></p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+    (() => {
+        // Must match the API_BASE used in script.js (the checkout API's
+        // Vercel deployment).
+        const API_BASE = 'https://telekung-maryam.vercel.app';
+        const TOKEN_KEY = 'tm_admin_token';
+
+        const loginSection = document.getElementById('login-section');
+        const panelSection = document.getElementById('panel-section');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const productList = document.getElementById('product-list');
+        const addForm = document.getElementById('add-form');
+        const addError = document.getElementById('add-error');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        let token = sessionStorage.getItem(TOKEN_KEY) || '';
+
+        const authHeaders = () => ({ Authorization: `Bearer ${token}` });
+
+        const showPanel = () => {
+            loginSection.hidden = true;
+            panelSection.hidden = false;
+            logoutBtn.hidden = false;
+            loadProducts();
+        };
+        const showLogin = () => {
+            loginSection.hidden = false;
+            panelSection.hidden = true;
+            logoutBtn.hidden = true;
+        };
+
+        const fileToDataUrl = (file) => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+
+        async function uploadImage(file) {
+            const dataUrl = await fileToDataUrl(file);
+            const resp = await fetch(`${API_BASE}/api/admin/upload-image`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...authHeaders() },
+                body: JSON.stringify({ dataUrl }),
+            });
+            const data = await resp.json();
+            if (!resp.ok) throw new Error(data.error || 'Gagal muat naik imej.');
+            return data.path;
+        }
+
+        async function loadProducts() {
+            productList.innerHTML = '<p class="muted">Memuatkan...</p>';
+            try {
+                const resp = await fetch(`products.json?t=${Date.now()}`, { cache: 'no-store' });
+                const products = await resp.json();
+                productList.innerHTML = '';
+                if (!products.length) {
+                    productList.innerHTML = '<p class="muted">Tiada produk lagi.</p>';
+                    return;
+                }
+                products.forEach((p) => productList.appendChild(renderRow(p)));
+            } catch (err) {
+                productList.innerHTML = '<p class="status-error">Gagal memuatkan produk.</p>';
+            }
+        }
+
+        function renderRow(p) {
+            const row = document.createElement('form');
+            row.className = 'product-row';
+            row.innerHTML = `
+                <img class="product-thumb" src="${p.image || ''}" alt="">
+                <div>
+                    <div class="field-grid">
+                        <label>Nama <input name="name" value="${(p.name || '').replace(/"/g, '&quot;')}" required></label>
+                        <label>Harga (RM) <input name="price" type="number" step="0.01" min="0" value="${p.price}" required></label>
+                        <label>Harga Asal (RM, opsyenal) <input name="oldPrice" type="number" step="0.01" min="0" value="${p.oldPrice ?? ''}"></label>
+                        <label>Label <input name="badge" value="${p.badge || ''}"></label>
+                        <label>Tukar Gambar <input name="imageFile" type="file" accept="image/png,image/jpeg,image/webp"></label>
+                    </div>
+                    <div class="product-row-actions">
+                        <button type="submit" class="primary-btn">Simpan</button>
+                        <button type="button" class="secondary-btn row-delete">Padam</button>
+                    </div>
+                </div>
+                <p class="product-row-status"></p>
+            `;
+            const status = row.querySelector('.product-row-status');
+
+            row.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                status.textContent = 'Menyimpan...';
+                status.className = 'product-row-status';
+                try {
+                    const fd = new FormData(row);
+                    let image = p.image;
+                    const file = fd.get('imageFile');
+                    if (file && file.size > 0) {
+                        image = await uploadImage(file);
+                    }
+                    const resp = await fetch(`${API_BASE}/api/admin/products`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+                        body: JSON.stringify({
+                            id: p.id,
+                            name: fd.get('name'),
+                            price: fd.get('price'),
+                            oldPrice: fd.get('oldPrice') || null,
+                            badge: fd.get('badge'),
+                            image,
+                        }),
+                    });
+                    const data = await resp.json();
+                    if (!resp.ok) throw new Error(data.error || 'Gagal simpan.');
+                    status.textContent = 'Disimpan! Laman akan kemas kini sebentar lagi.';
+                    status.className = 'product-row-status status-ok';
+                    setTimeout(loadProducts, 1200);
+                } catch (err) {
+                    status.textContent = err.message;
+                    status.className = 'product-row-status status-error';
+                }
+            });
+
+            row.querySelector('.row-delete').addEventListener('click', async () => {
+                if (!confirm(`Padam produk "${p.name}"? Tindakan ini akan commit terus ke repo.`)) return;
+                status.textContent = 'Memadam...';
+                status.className = 'product-row-status';
+                try {
+                    const resp = await fetch(`${API_BASE}/api/admin/products`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+                        body: JSON.stringify({ id: p.id }),
+                    });
+                    const data = await resp.json();
+                    if (!resp.ok) throw new Error(data.error || 'Gagal padam.');
+                    loadProducts();
+                } catch (err) {
+                    status.textContent = err.message;
+                    status.className = 'product-row-status status-error';
+                }
+            });
+
+            return row;
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginError.textContent = '';
+            const password = document.getElementById('login-password').value;
+            try {
+                const resp = await fetch(`${API_BASE}/api/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password }),
+                });
+                const data = await resp.json();
+                if (!resp.ok) throw new Error(data.error || 'Log masuk gagal.');
+                token = data.token;
+                sessionStorage.setItem(TOKEN_KEY, token);
+                loginForm.reset();
+                showPanel();
+            } catch (err) {
+                loginError.textContent = err.message;
+            }
+        });
+
+        addForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            addError.textContent = '';
+            try {
+                const fd = new FormData(addForm);
+                let image = '';
+                const file = fd.get('imageFile');
+                if (file && file.size > 0) {
+                    image = await uploadImage(file);
+                }
+                const resp = await fetch(`${API_BASE}/api/admin/products`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+                    body: JSON.stringify({
+                        name: fd.get('name'),
+                        price: fd.get('price'),
+                        oldPrice: fd.get('oldPrice') || null,
+                        badge: fd.get('badge'),
+                        image,
+                    }),
+                });
+                const data = await resp.json();
+                if (!resp.ok) throw new Error(data.error || 'Gagal tambah produk.');
+                addForm.reset();
+                loadProducts();
+            } catch (err) {
+                addError.textContent = err.message;
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem(TOKEN_KEY);
+            token = '';
+            showLogin();
+        });
+
+        if (token) {
+            showPanel();
+        } else {
+            showLogin();
+        }
+    })();
+    </script>
+</body>
+</html>

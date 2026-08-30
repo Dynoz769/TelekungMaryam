@@ -43,13 +43,59 @@
         return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
     };
 
-    document.querySelectorAll('img').forEach((img) => {
-        if (!img.hasAttribute('loading')) img.loading = 'lazy';
-        img.addEventListener('error', () => {
-            img.src = placeholderDataUri(img.alt);
-            img.classList.add('img-fallback');
-        }, { once: true });
-    });
+    const attachImageFallback = (root = document) => {
+        root.querySelectorAll('img').forEach((img) => {
+            if (!img.hasAttribute('loading')) img.loading = 'lazy';
+            img.addEventListener('error', () => {
+                img.src = placeholderDataUri(img.alt);
+                img.classList.add('img-fallback');
+            }, { once: true });
+        });
+    };
+    attachImageFallback();
+
+    /* ---------- Products (rendered from products.json, edited via admin.html) ---------- */
+    const escapeHtml = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+    const productGrid = document.getElementById('product-grid');
+    const productGridStatus = document.getElementById('product-grid-status');
+
+    const renderProducts = (products) => {
+        if (!productGrid) return;
+        if (!Array.isArray(products) || products.length === 0) {
+            productGrid.innerHTML = '<p class="muted">Tiada produk buat masa ini.</p>';
+            return;
+        }
+        productGrid.innerHTML = products.map((p) => `
+            <article class="product-card" data-item="${escapeHtml(p.name)}" data-price="${Number(p.price) || 0}">
+                ${p.badge ? `<span class="pill sale">${escapeHtml(p.badge)}</span>` : ''}
+                <img loading="lazy" src="${escapeHtml(p.image || '')}" alt="${escapeHtml(p.name)}">
+                <div class="product-info">
+                    <h3>${escapeHtml(p.name)}</h3>
+                    <div class="price-row">
+                        <span class="price">RM${Number(p.price) || 0}</span>
+                        ${p.oldPrice ? `<span class="old">RM${Number(p.oldPrice)}</span>` : ''}
+                    </div>
+                    <div class="actions">
+                        <button class="primary-btn buy-btn">Add to Cart</button>
+                        <button class="secondary-btn wishlist-btn">Wishlist</button>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+        attachImageFallback(productGrid);
+    };
+
+    const loadProducts = async () => {
+        try {
+            const resp = await fetch('products.json', { cache: 'no-store' });
+            const products = await resp.json();
+            renderProducts(products);
+        } catch (err) {
+            if (productGridStatus) productGridStatus.textContent = 'Gagal memuatkan produk. Sila muat semula halaman.';
+        }
+    };
+    loadProducts();
 
     /* ---------- Cart ---------- */
     const cartCountEl = document.getElementById('cart-count');
@@ -118,24 +164,27 @@
         renderCart();
     });
 
-    document.querySelectorAll('.buy-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const card = btn.closest('.product-card');
+    // Product cards are rendered dynamically (see loadProducts above), so
+    // buy/wishlist clicks are handled via delegation on the grid rather
+    // than per-button listeners attached at page load.
+    productGrid?.addEventListener('click', (e) => {
+        const buyBtn = e.target.closest('.buy-btn');
+        if (buyBtn) {
+            const card = buyBtn.closest('.product-card');
             const item = card?.dataset.item || 'Produk';
             const price = Number(card?.dataset.price || 0);
             addToCart(item, price);
             showToast(`${item} dimasukkan ke troli (${money(price)}).`);
-        });
-    });
-
-    document.querySelectorAll('.wishlist-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const card = btn.closest('.product-card');
+            return;
+        }
+        const wishBtn = e.target.closest('.wishlist-btn');
+        if (wishBtn) {
+            const card = wishBtn.closest('.product-card');
             const item = card?.dataset.item || 'Produk';
-            const isSaved = btn.classList.toggle('active');
-            btn.textContent = isSaved ? 'Disimpan ♥' : 'Wishlist';
+            const isSaved = wishBtn.classList.toggle('active');
+            wishBtn.textContent = isSaved ? 'Disimpan ♥' : 'Wishlist';
             showToast(isSaved ? `${item} disimpan ke wishlist.` : `${item} dibuang dari wishlist.`);
-        });
+        }
     });
 
     /* ---------- Cart drawer open/close ---------- */
@@ -259,7 +308,9 @@
     const searchClose = document.getElementById('search-close');
     const searchInput = document.getElementById('search-input');
     const searchHint = document.getElementById('search-hint');
-    const productCards = Array.from(document.querySelectorAll('.product-card'));
+    // Product cards are rendered dynamically (loadProducts), so query them
+    // fresh on every use instead of caching a list from before they existed.
+    const getProductCards = () => Array.from(document.querySelectorAll('.product-card'));
 
     const openSearch = () => {
         searchPanel?.removeAttribute('hidden');
@@ -270,7 +321,7 @@
         searchPanel?.setAttribute('hidden', '');
         searchToggle?.setAttribute('aria-expanded', 'false');
         if (searchInput) searchInput.value = '';
-        productCards.forEach((c) => c.classList.remove('is-hidden'));
+        getProductCards().forEach((c) => c.classList.remove('is-hidden'));
         if (searchHint) searchHint.textContent = '';
     };
     searchToggle?.addEventListener('click', () => {
@@ -281,6 +332,7 @@
 
     searchInput?.addEventListener('input', () => {
         const q = searchInput.value.trim().toLowerCase();
+        const productCards = getProductCards();
         if (!q) {
             productCards.forEach((c) => c.classList.remove('is-hidden'));
             if (searchHint) searchHint.textContent = '';

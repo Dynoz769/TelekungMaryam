@@ -17,27 +17,18 @@
 //                            (useful while the custom domain's DNS isn't
 //                            live yet and the storefront is only reachable
 //                            at its default GitHub Pages URL)
+//   GITHUB_TOKEN, GITHUB_REPO, GITHUB_BRANCH
+//                            Needed by _catalog.js to read the live price
+//                            list from products.json — see ADMIN_SETUP.md
 //
-// See PAYMENT_SETUP.md at the repo root for the full walkthrough.
+// See PAYMENT_SETUP.md and ADMIN_SETUP.md at the repo root for the full
+// walkthrough.
 
-const CATALOG = require('./_catalog');
+const { getCatalog } = require('./_catalog');
+const { applyCors } = require('./_cors');
 
 module.exports = async (req, res) => {
-  // Support a comma-separated allow-list so the storefront's custom domain
-  // and its default GitHub Pages URL can both call this API. A wildcard
-  // ('*' or unset) allows any origin -- only fine for local testing.
-  const allowList = (process.env.ALLOWED_ORIGIN || '*').split(',').map((o) => o.trim());
-  const requestOrigin = req.headers.origin;
-  const allowedOrigin = allowList.includes('*')
-    ? '*'
-    : allowList.includes(requestOrigin)
-      ? requestOrigin
-      : allowList[0]; // no match: fall back to the first configured origin (request will be rejected by the browser, which is intended)
-
-  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
-  res.setHeader('Vary', 'Origin');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  applyCors(req, res, 'POST, OPTIONS');
 
   if (req.method === 'OPTIONS') {
     res.status(204).end();
@@ -56,8 +47,9 @@ module.exports = async (req, res) => {
       return;
     }
 
-    // Recompute the total server-side from the fixed catalog — never trust
-    // a price the browser sends.
+    // Recompute the total server-side from the live catalog (products.json
+    // in this repo) — never trust a price the browser sends.
+    const CATALOG = await getCatalog();
     let totalSen = 0;
     const lines = [];
     for (const line of items) {

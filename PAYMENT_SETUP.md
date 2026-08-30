@@ -9,7 +9,7 @@ GitHub Pages tak boleh jalankan kod server.
 Fail berkaitan dalam repo ni:
 - `api/checkout.js` — cipta "bill" ToyyibPay apabila pelanggan klik Checkout
 - `api/toyyibpay-webhook.js` — terima notifikasi dari ToyyibPay bila bil dibayar, sahkan semula dengan API `getBillTransactions` sebelum dipercayai
-- `api/_catalog.js` — senarai harga sebenar (server sahkan harga, bukan browser)
+- `api/_catalog.js` — baca harga sebenar dari `products.json` di repo (server sahkan harga, bukan browser)
 - `.env.example` — senarai environment variable yang diperlukan
 
 ## 1. Daftar akaun ToyyibPay
@@ -65,5 +65,5 @@ Fail berkaitan dalam repo ni:
 
 - **Callback ToyyibPay tidak ditandatangani secara kriptografi** (tak macam sesetengah gateway lain) — sesiapa boleh cuba POST data palsu ke `api/toyyibpay-webhook.js`. Sebab itu handler ni **panggil balik API `getBillTransactions`** ToyyibPay untuk sahkan status sebenar sebelum dipercayai — jangan buang langkah ni.
 - **Belum ada database order.** Webhook sekarang cuma `console.log` bila bil disahkan dibayar — ia **tidak** simpan rekod pesanan di mana-mana. Sebelum jual sebenar, tambah storan (contoh: [Vercel KV](https://vercel.com/docs/storage/vercel-kv), [Supabase](https://supabase.com), atau Google Sheets API) supaya anda boleh jejak siapa dah bayar dan proses penghantaran.
-- **Harga disahkan di server** (`api/_catalog.js`) — kalau tambah produk baharu di `index.html`, ingat kemas kini fail ni juga, kalau tidak checkout produk baharu akan gagal.
+- **Harga disahkan di server** terus dari `products.json` di repo — kemas kini produk/harga melalui `admin.html` (lihat `ADMIN_SETUP.md`), bukan edit `index.html` secara manual lagi.
 - **Jangan letak Secret Key terus dalam `script.js`** — kekal guna environment variable di Vercel sahaja.

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "telekung-sakinah-soft-rose",
+    "name": "Telekung Sakinah (Soft Rose)",
+    "price": 239,
+    "oldPrice": 329,
+    "image": "images/telekung-sakinah.jpg",
+    "badge": "-27%"
+  },
+  {
+    "id": "telekung-hawa-travel",
+    "name": "Telekung Hawa Travel",
+    "price": 199,
+    "oldPrice": 259,
+    "image": "images/telekung-hawa.jpg",
+    "badge": "-23%"
+  },
+  {
+    "id": "telekung-deluxe-lace",
+    "name": "Telekung Deluxe Lace",
+    "price": 309,
+    "oldPrice": 389,
+    "image": "images/telekung-deluxe.jpg",
+    "badge": "-21%"
+  },
+  {
+    "id": "telekung-basic-ivory",
+    "name": "Telekung Basic Ivory",
+    "price": 159,
+    "oldPrice": 199,
+    "image": "images/telekung-basic.jpg",
+    "badge": "-20%"
+  }
+]
