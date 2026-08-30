@@ -1,0 +1,99 @@
+{
+  "announcement": {
+    "text": "A Tribute to Men - Lelaki Tak Bercerita.",
+    "linkText": "Shop Now!",
+    "linkHref": "#products"
+  },
+  "hero": {
+    "eyebrow": "Telekung lembut & sopan, siap kirim.",
+    "heading": "Telekung Maryam",
+    "lede": "Koleksi istimewa untuk solat yang tenang—material sejuk, tudung terletak, dan set hadiah tersedia.",
+    "buttonText": "Shop Now",
+    "buttonHref": "#products",
+    "image": "images/hero.jpg"
+  },
+  "storiesHeader": {
+    "heading": "Becoming Better, Every Day.",
+    "text": "Material berkualiti, reka bentuk penuh makna, dan keselesaan yang diperiksa rapi untuk setiap langkah ibadah."
+  },
+  "stories": [
+    {
+      "id": "story-harian",
+      "title": "Telekung Harian",
+      "text": "Material sejuk, mudah pakai, dan kekal sopan untuk solat di rumah atau pejabat.",
+      "buttonText": "Shop Now",
+      "buttonHref": "#products",
+      "image": "images/telekung-harian.jpg"
+    },
+    {
+      "id": "story-premium",
+      "title": "Telekung Premium",
+      "text": "Renda halus, jatuh cantik, dan kemasan eksklusif untuk hadiah bermakna.",
+      "buttonText": "Shop Now",
+      "buttonHref": "#products",
+      "image": "images/telekung-premium.jpg"
+    },
+    {
+      "id": "story-umrah",
+      "title": "Telekung Umrah & Haji",
+      "text": "Ringkas, ringan, dan tidak mudah kusut—mudah dibawa sepanjang perjalanan.",
+      "buttonText": "Shop Now",
+      "buttonHref": "#products",
+      "image": "images/telekung-umrah.jpg"
+    }
+  ],
+  "gift": {
+    "eyebrow": "Hadiah",
+    "heading": "Hadiah Yang Paling Bermakna",
+    "text": "A cherished gift sebagai tanda ingatan cinta & pemikiran dalam kehidupan harian.",
+    "buttonText": "Shop Now",
+    "buttonHref": "#products",
+    "image": "images/gift.jpg"
+  },
+  "customSections": [],
+  "brands": ["Maybank", "Petronas", "AEON", "TV Alhijrah", "Affin", "Suria"],
+  "productsHeader": {
+    "heading": "Best Sellers Telekung",
+    "text": "Pilihan utama pelanggan—dari premium lace hingga travel-friendly, sedia hadiah."
+  },
+  "storesHeader": {
+    "heading": "Find Our Store Near You",
+    "text": "Lokasi berhampiran untuk mencuba koleksi, dapatkan nasihat, dan ambil terus."
+  },
+  "stores": [
+    {
+      "id": "store-bangi",
+      "name": "Telekung Maryam Bangi Sentral",
+      "address": "UG-02, Sunway Gandaria 2, Bandar Baru Bangi.",
+      "hours": "10am – 7pm",
+      "phone": "+6010-959 8779",
+      "image": "images/store-bangi.jpg"
+    },
+    {
+      "id": "store-shahalam",
+      "name": "Telekung Maryam Shah Alam",
+      "address": "Pusat Komersial, Jalan Plumbum, Seksyen 7, Shah Alam.",
+      "hours": "10am – 7pm",
+      "phone": "+6014-364 5611",
+      "image": "images/store-shahalam.jpg"
+    },
+    {
+      "id": "store-kl",
+      "name": "Telekung Maryam KL East",
+      "address": "Jalan Melati Utama 4, 53100 Kuala Lumpur.",
+      "hours": "10am – 10pm",
+      "phone": "+6011-6063 8779",
+      "image": "images/store-kl.jpg"
+    }
+  ],
+  "help": {
+    "heading": "How Can We Help?",
+    "contactLine": "+6017 616 5683 · +6010 931 2089 · salam@telekungmaryam.com.my",
+    "hoursText": "Bantuan Ahad hingga Khamis, 9.00 AM – 5.00 PM MYT."
+  },
+  "footer": {
+    "brandName": "Telekung Maryam",
+    "tagline": "Becoming Better, Every Day.",
+    "description": "Kami menginspirasi perjalanan peribadi & spiritual anda, dengan produk yang membantu anda menjadi versi terbaik."
+  }
+}

@@ -69,6 +69,39 @@
         .status-ok { color: var(--green); }
         .status-error { color: #c0392b; }
         .muted-small { font-size: 0.82rem; color: var(--muted); margin-top: -6px; }
+        .admin-card h3 {
+            margin: 26px 0 10px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+            font-size: 1rem;
+        }
+        .admin-card h3:first-of-type { margin-top: 4px; padding-top: 0; border-top: none; }
+        .content-row {
+            display: grid;
+            grid-template-columns: 84px 1fr;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .content-row:last-child { border-bottom: none; }
+        .content-thumb {
+            width: 84px;
+            height: 84px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: var(--beige);
+        }
+        .content-row-actions { margin-top: 6px; }
+        .brand-row-item {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .brand-row-item input { flex: 1; }
+        .add-item-btn { margin-top: 4px; }
+        .image-field { display: grid; gap: 6px; margin-top: 4px; }
+        .image-field label { font-size: 0.85rem; font-weight: 700; color: var(--muted); }
     </style>
 </head>
 <body>
@@ -106,6 +139,51 @@
                 </form>
                 <p class="product-row-status status-error" id="add-error"></p>
             </div>
+
+            <div class="admin-card">
+                <h2>Kandungan Laman</h2>
+                <p class="muted-small">Ubah teks & gambar di seluruh laman utama. Buat semua perubahan yang nak dulu, lepas tu klik "Simpan Semua Perubahan" di bawah sekali sahaja.</p>
+
+                <h3>Bar Pengumuman (paling atas laman)</h3>
+                <div class="field-grid" id="content-announcement"></div>
+
+                <h3>Hero (bahagian utama)</h3>
+                <div class="field-grid" id="content-hero"></div>
+
+                <h3>Bahagian "Becoming Better, Every Day"</h3>
+                <div class="field-grid" id="content-stories-header"></div>
+                <div id="content-stories-list"></div>
+                <button type="button" class="secondary-btn add-item-btn" id="add-story-btn">+ Tambah Kad</button>
+
+                <h3>Bahagian Hadiah</h3>
+                <div class="field-grid" id="content-gift"></div>
+
+                <h3>Bahagian Custom</h3>
+                <p class="muted-small">Bahagian tambahan yang admin boleh cipta sendiri — dipaparkan di laman selepas Hadiah, sebelum senarai jenama. Kosongkan semua = tak dipaparkan langsung.</p>
+                <div id="content-custom-list"></div>
+                <button type="button" class="secondary-btn add-item-btn" id="add-custom-btn">+ Tambah Bahagian Custom</button>
+
+                <h3>Jenama Rakan Niaga</h3>
+                <div id="content-brands-list"></div>
+                <button type="button" class="secondary-btn add-item-btn" id="add-brand-btn">+ Tambah Jenama</button>
+
+                <h3>Header "Best Sellers"</h3>
+                <div class="field-grid" id="content-products-header"></div>
+
+                <h3>Header Kedai</h3>
+                <div class="field-grid" id="content-stores-header"></div>
+                <div id="content-stores-list"></div>
+                <button type="button" class="secondary-btn add-item-btn" id="add-store-btn">+ Tambah Kedai</button>
+
+                <h3>Bahagian Bantuan</h3>
+                <div class="field-grid" id="content-help"></div>
+
+                <h3>Footer</h3>
+                <div class="field-grid" id="content-footer"></div>
+
+                <button type="button" class="primary-btn" id="save-content-btn" style="margin-top: 20px; width: 100%;">Simpan Semua Perubahan</button>
+                <p class="product-row-status" id="content-status"></p>
+            </div>
         </section>
     </div>
 
@@ -134,6 +212,7 @@
             panelSection.hidden = false;
             logoutBtn.hidden = false;
             loadProducts();
+            loadContentEditor();
         };
         const showLogin = () => {
             loginSection.hidden = false;
@@ -253,6 +332,274 @@
 
             return row;
         }
+
+        /* ---------- Site content editor ---------- */
+        const escAttr = (s) => (s ?? '').toString().replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+        function setPath(obj, path, value) {
+            const keys = path.split('.');
+            let cur = obj;
+            for (let i = 0; i < keys.length - 1; i++) {
+                if (cur[keys[i]] == null || typeof cur[keys[i]] !== 'object') cur[keys[i]] = {};
+                cur = cur[keys[i]];
+            }
+            cur[keys[keys.length - 1]] = value;
+        }
+
+        function field(label, path, value) {
+            return `<label>${label} <input data-path="${path}" value="${escAttr(value)}"></label>`;
+        }
+
+        let content = null;
+        let storiesState = [];
+        let storesState = [];
+        let customState = [];
+        let brandsState = [];
+
+        const contentStatus = document.getElementById('content-status');
+
+        function renderSimpleSections() {
+            document.getElementById('content-announcement').innerHTML = [
+                field('Teks pengumuman', 'announcement.text', content.announcement?.text),
+                field('Teks pautan', 'announcement.linkText', content.announcement?.linkText),
+                field('URL pautan (contoh #products)', 'announcement.linkHref', content.announcement?.linkHref),
+            ].join('');
+
+            document.getElementById('content-hero').innerHTML = [
+                field('Eyebrow (baris kecil atas tajuk)', 'hero.eyebrow', content.hero?.eyebrow),
+                field('Tajuk utama', 'hero.heading', content.hero?.heading),
+                field('Perenggan penerangan', 'hero.lede', content.hero?.lede),
+                field('Teks butang', 'hero.buttonText', content.hero?.buttonText),
+                field('URL butang', 'hero.buttonHref', content.hero?.buttonHref),
+            ].join('') + `
+                <div class="image-field">
+                    <label>Gambar Hero</label>
+                    <img class="content-thumb" src="${escAttr(content.hero?.image)}" alt="">
+                    <input type="file" accept="image/png,image/jpeg,image/webp" id="hero-image-file">
+                </div>`;
+
+            document.getElementById('content-stories-header').innerHTML = [
+                field('Tajuk bahagian', 'storiesHeader.heading', content.storiesHeader?.heading),
+                field('Teks bahagian', 'storiesHeader.text', content.storiesHeader?.text),
+            ].join('');
+
+            document.getElementById('content-gift').innerHTML = [
+                field('Eyebrow', 'gift.eyebrow', content.gift?.eyebrow),
+                field('Tajuk', 'gift.heading', content.gift?.heading),
+                field('Teks', 'gift.text', content.gift?.text),
+                field('Teks butang', 'gift.buttonText', content.gift?.buttonText),
+                field('URL butang', 'gift.buttonHref', content.gift?.buttonHref),
+            ].join('') + `
+                <div class="image-field">
+                    <label>Gambar Hadiah</label>
+                    <img class="content-thumb" src="${escAttr(content.gift?.image)}" alt="">
+                    <input type="file" accept="image/png,image/jpeg,image/webp" id="gift-image-file">
+                </div>`;
+
+            document.getElementById('content-products-header').innerHTML = [
+                field('Tajuk', 'productsHeader.heading', content.productsHeader?.heading),
+                field('Teks', 'productsHeader.text', content.productsHeader?.text),
+            ].join('');
+
+            document.getElementById('content-stores-header').innerHTML = [
+                field('Tajuk', 'storesHeader.heading', content.storesHeader?.heading),
+                field('Teks', 'storesHeader.text', content.storesHeader?.text),
+            ].join('');
+
+            document.getElementById('content-help').innerHTML = [
+                field('Tajuk', 'help.heading', content.help?.heading),
+                field('Baris hubungan (telefon/emel)', 'help.contactLine', content.help?.contactLine),
+                field('Waktu bantuan', 'help.hoursText', content.help?.hoursText),
+            ].join('');
+
+            document.getElementById('content-footer').innerHTML = [
+                field('Nama jenama', 'footer.brandName', content.footer?.brandName),
+                field('Tagline', 'footer.tagline', content.footer?.tagline),
+                field('Penerangan', 'footer.description', content.footer?.description),
+            ].join('');
+        }
+
+        // Shared renderer for the three repeatable, image-carrying lists
+        // (stories, stores, custom sections). `itemMarkup(item, idx)` returns
+        // one `.content-row` block; text inputs write straight back into the
+        // state array on input, and a chosen file is stashed on the item as
+        // `_file` (uploaded only when Save is pressed).
+        function bindRepeatable(container, state, itemMarkup, rerender) {
+            container.innerHTML = state.map(itemMarkup).join('');
+            container.querySelectorAll('.content-row').forEach((row) => {
+                const idx = Number(row.dataset.idx);
+                row.querySelectorAll('[data-field]').forEach((input) => {
+                    const key = input.dataset.field;
+                    if (input.type === 'file') {
+                        input.addEventListener('change', () => {
+                            state[idx]._file = input.files[0] || null;
+                        });
+                    } else {
+                        input.addEventListener('input', () => {
+                            state[idx][key] = input.value;
+                        });
+                    }
+                });
+                row.querySelector('.remove-item-btn')?.addEventListener('click', () => {
+                    state.splice(idx, 1);
+                    rerender();
+                });
+            });
+        }
+
+        function renderStories() {
+            bindRepeatable(document.getElementById('content-stories-list'), storiesState, (item, idx) => `
+                <div class="content-row" data-idx="${idx}">
+                    <img class="content-thumb" src="${escAttr(item.image)}" alt="">
+                    <div>
+                        <div class="field-grid">
+                            <label>Tajuk <input data-field="title" value="${escAttr(item.title)}"></label>
+                            <label>Teks <input data-field="text" value="${escAttr(item.text)}"></label>
+                            <label>Teks Butang <input data-field="buttonText" value="${escAttr(item.buttonText)}"></label>
+                            <label>URL Butang <input data-field="buttonHref" value="${escAttr(item.buttonHref)}"></label>
+                            <label>Tukar Gambar <input type="file" accept="image/png,image/jpeg,image/webp" data-field="_file"></label>
+                        </div>
+                        <div class="content-row-actions"><button type="button" class="secondary-btn remove-item-btn">Padam Kad</button></div>
+                    </div>
+                </div>`, renderStories);
+        }
+
+        function renderStores() {
+            bindRepeatable(document.getElementById('content-stores-list'), storesState, (item, idx) => `
+                <div class="content-row" data-idx="${idx}">
+                    <img class="content-thumb" src="${escAttr(item.image)}" alt="">
+                    <div>
+                        <div class="field-grid">
+                            <label>Nama Kedai <input data-field="name" value="${escAttr(item.name)}"></label>
+                            <label>Alamat <input data-field="address" value="${escAttr(item.address)}"></label>
+                            <label>Waktu Operasi <input data-field="hours" value="${escAttr(item.hours)}"></label>
+                            <label>No. Telefon <input data-field="phone" value="${escAttr(item.phone)}"></label>
+                            <label>Tukar Gambar <input type="file" accept="image/png,image/jpeg,image/webp" data-field="_file"></label>
+                        </div>
+                        <div class="content-row-actions"><button type="button" class="secondary-btn remove-item-btn">Padam Kedai</button></div>
+                    </div>
+                </div>`, renderStores);
+        }
+
+        function renderCustomSections() {
+            bindRepeatable(document.getElementById('content-custom-list'), customState, (item, idx) => `
+                <div class="content-row" data-idx="${idx}">
+                    <img class="content-thumb" src="${escAttr(item.image)}" alt="">
+                    <div>
+                        <div class="field-grid">
+                            <label>Tajuk <input data-field="heading" value="${escAttr(item.heading)}"></label>
+                            <label>Teks <input data-field="text" value="${escAttr(item.text)}"></label>
+                            <label>Teks Butang (opsyenal) <input data-field="buttonText" value="${escAttr(item.buttonText)}"></label>
+                            <label>URL Butang <input data-field="buttonHref" value="${escAttr(item.buttonHref)}"></label>
+                            <label>Tukar Gambar <input type="file" accept="image/png,image/jpeg,image/webp" data-field="_file"></label>
+                        </div>
+                        <div class="content-row-actions"><button type="button" class="secondary-btn remove-item-btn">Padam Bahagian</button></div>
+                    </div>
+                </div>`, renderCustomSections);
+        }
+
+        function renderBrands() {
+            const el = document.getElementById('content-brands-list');
+            el.innerHTML = brandsState.map((name, idx) => `
+                <div class="brand-row-item" data-idx="${idx}">
+                    <input data-field="name" value="${escAttr(name)}">
+                    <button type="button" class="secondary-btn remove-item-btn">Padam</button>
+                </div>`).join('');
+            el.querySelectorAll('.brand-row-item').forEach((row) => {
+                const idx = Number(row.dataset.idx);
+                row.querySelector('[data-field]').addEventListener('input', (e) => { brandsState[idx] = e.target.value; });
+                row.querySelector('.remove-item-btn').addEventListener('click', () => {
+                    brandsState.splice(idx, 1);
+                    renderBrands();
+                });
+            });
+        }
+
+        async function loadContentEditor() {
+            try {
+                const resp = await fetch(`content.json?t=${Date.now()}`, { cache: 'no-store' });
+                content = await resp.json();
+                storiesState = (content.stories || []).map((s) => ({ ...s }));
+                storesState = (content.stores || []).map((s) => ({ ...s }));
+                customState = (content.customSections || []).map((s) => ({ ...s }));
+                brandsState = (content.brands || []).slice();
+                renderSimpleSections();
+                renderStories();
+                renderStores();
+                renderCustomSections();
+                renderBrands();
+            } catch (err) {
+                contentStatus.textContent = 'Gagal memuatkan kandungan laman.';
+                contentStatus.className = 'product-row-status status-error';
+            }
+        }
+
+        document.getElementById('add-story-btn').addEventListener('click', () => {
+            storiesState.push({ title: '', text: '', buttonText: 'Shop Now', buttonHref: '#products', image: '' });
+            renderStories();
+        });
+        document.getElementById('add-store-btn').addEventListener('click', () => {
+            storesState.push({ name: '', address: '', hours: '', phone: '', image: '' });
+            renderStores();
+        });
+        document.getElementById('add-custom-btn').addEventListener('click', () => {
+            customState.push({ heading: '', text: '', buttonText: '', buttonHref: '', image: '' });
+            renderCustomSections();
+        });
+        document.getElementById('add-brand-btn').addEventListener('click', () => {
+            brandsState.push('');
+            renderBrands();
+        });
+
+        document.getElementById('save-content-btn').addEventListener('click', async () => {
+            contentStatus.textContent = 'Menyimpan...';
+            contentStatus.className = 'product-row-status';
+            try {
+                const newContent = JSON.parse(JSON.stringify(content));
+
+                document.querySelectorAll('#panel-section [data-path]').forEach((input) => {
+                    setPath(newContent, input.dataset.path, input.value);
+                });
+
+                const heroFile = document.getElementById('hero-image-file').files[0];
+                if (heroFile) newContent.hero.image = await uploadImage(heroFile);
+
+                const giftFile = document.getElementById('gift-image-file').files[0];
+                if (giftFile) newContent.gift.image = await uploadImage(giftFile);
+
+                async function resolveList(state) {
+                    const out = [];
+                    for (const item of state) {
+                        const clean = { ...item };
+                        if (clean._file) {
+                            clean.image = await uploadImage(clean._file);
+                            delete clean._file;
+                        }
+                        out.push(clean);
+                    }
+                    return out;
+                }
+                newContent.stories = await resolveList(storiesState);
+                newContent.stores = await resolveList(storesState);
+                newContent.customSections = await resolveList(customState);
+                newContent.brands = brandsState.map((b) => b.trim()).filter(Boolean);
+
+                const resp = await fetch(`${API_BASE}/api/admin/content`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+                    body: JSON.stringify(newContent),
+                });
+                const data = await resp.json();
+                if (!resp.ok) throw new Error(data.error || 'Gagal simpan.');
+
+                contentStatus.textContent = 'Semua perubahan disimpan! Laman akan kemas kini sebentar lagi.';
+                contentStatus.className = 'product-row-status status-ok';
+                loadContentEditor();
+            } catch (err) {
+                contentStatus.textContent = err.message;
+                contentStatus.className = 'product-row-status status-error';
+            }
+        });
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();

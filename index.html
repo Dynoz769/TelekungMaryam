@@ -13,7 +13,7 @@
     <a class="skip-link" href="#main-content">Langkau ke kandungan</a>
 
     <div class="announce-bar">
-        <p>A Tribute to Men - Lelaki Tak Bercerita. <a href="#products">Shop Now!</a></p>
+        <p><span id="announce-text">A Tribute to Men - Lelaki Tak Bercerita.</span> <a href="#products" id="announce-link">Shop Now!</a></p>
     </div>
 
     <header class="topbar">
@@ -125,80 +125,45 @@
     <main id="main-content">
         <section class="hero" id="hero">
             <div class="hero-overlay"></div>
-            <!-- Letak hero utama telekung anda di sini -->
-            <img class="hero-bg" src="images/hero.jpg" alt="Telekung Maryam hero">
+            <img class="hero-bg" id="hero-image" src="images/hero.jpg" alt="Telekung Maryam hero">
             <div class="hero-content">
-                <p class="eyebrow">Telekung lembut & sopan, siap kirim.</p>
-                <h1>Telekung Maryam</h1>
-                <p class="lede">Koleksi istimewa untuk solat yang tenang—material sejuk, tudung terletak, dan set hadiah tersedia.</p>
-                <a class="primary-btn" href="#products">Shop Now</a>
+                <p class="eyebrow" id="hero-eyebrow">Telekung lembut & sopan, siap kirim.</p>
+                <h1 id="hero-heading">Telekung Maryam</h1>
+                <p class="lede" id="hero-lede">Koleksi istimewa untuk solat yang tenang—material sejuk, tudung terletak, dan set hadiah tersedia.</p>
+                <a class="primary-btn" id="hero-button" href="#products">Shop Now</a>
             </div>
         </section>
 
         <section class="section stories" id="stories">
             <div class="section-header">
-                <h2>Becoming Better, Every Day.</h2>
-                <p>Material berkualiti, reka bentuk penuh makna, dan keselesaan yang diperiksa rapi untuk setiap langkah ibadah.</p>
+                <h2 id="stories-heading">Becoming Better, Every Day.</h2>
+                <p id="stories-text">Material berkualiti, reka bentuk penuh makna, dan keselesaan yang diperiksa rapi untuk setiap langkah ibadah.</p>
             </div>
-            <div class="story-grid">
-                <article class="story-card">
-                    <!-- Gambar telekung harian -->
-                    <img loading="lazy" src="images/telekung-harian.jpg" alt="Telekung harian">
-                    <div class="story-body">
-                        <h3>Telekung Harian</h3>
-                        <p>Material sejuk, mudah pakai, dan kekal sopan untuk solat di rumah atau pejabat.</p>
-                        <a class="ghost-link" href="#products">Shop Now</a>
-                    </div>
-                </article>
-                <article class="story-card">
-                    <!-- Gambar telekung premium -->
-                    <img loading="lazy" src="images/telekung-premium.jpg" alt="Telekung premium">
-                    <div class="story-body">
-                        <h3>Telekung Premium</h3>
-                        <p>Renda halus, jatuh cantik, dan kemasan eksklusif untuk hadiah bermakna.</p>
-                        <a class="ghost-link" href="#products">Shop Now</a>
-                    </div>
-                </article>
-                <article class="story-card">
-                    <!-- Gambar telekung umrah/haji -->
-                    <img loading="lazy" src="images/telekung-umrah.jpg" alt="Telekung umrah">
-                    <div class="story-body">
-                        <h3>Telekung Umrah & Haji</h3>
-                        <p>Ringkas, ringan, dan tidak mudah kusut—mudah dibawa sepanjang perjalanan.</p>
-                        <a class="ghost-link" href="#products">Shop Now</a>
-                    </div>
-                </article>
-            </div>
+            <div class="story-grid" id="story-grid"></div>
         </section>
 
         <section class="section gift" id="gift">
             <div class="gift-copy">
-                <p class="eyebrow">Hadiah</p>
-                <h2>Hadiah Yang Paling Bermakna</h2>
-                <p>A cherished gift sebagai tanda ingatan cinta & pemikiran dalam kehidupan harian.</p>
-                <a class="primary-btn" href="#products">Shop Now</a>
+                <p class="eyebrow" id="gift-eyebrow">Hadiah</p>
+                <h2 id="gift-heading">Hadiah Yang Paling Bermakna</h2>
+                <p id="gift-text">A cherished gift sebagai tanda ingatan cinta & pemikiran dalam kehidupan harian.</p>
+                <a class="primary-btn" id="gift-button" href="#products">Shop Now</a>
             </div>
             <div class="gift-visual">
-                <!-- Gambar suasana hadiah telekung -->
-                <img loading="lazy" src="images/gift.jpg" alt="Gift moment">
+                <img loading="lazy" id="gift-image" src="images/gift.jpg" alt="Gift moment">
             </div>
         </section>
 
+        <div id="custom-sections"></div>
+
         <section class="section brands">
-            <div class="brand-row">
-                <span>Maybank</span>
-                <span>Petronas</span>
-                <span>AEON</span>
-                <span>TV Alhijrah</span>
-                <span>Affin</span>
-                <span>Suria</span>
-            </div>
+            <div class="brand-row" id="brand-row"></div>
         </section>
 
         <section class="section products" id="products">
             <div class="section-header">
-                <h2>Best Sellers Telekung</h2>
-                <p>Pilihan utama pelanggan—dari premium lace hingga travel-friendly, sedia hadiah.</p>
+                <h2 id="products-heading">Best Sellers Telekung</h2>
+                <p id="products-text">Pilihan utama pelanggan—dari premium lace hingga travel-friendly, sedia hadiah.</p>
             </div>
             <div class="product-grid" id="product-grid">
                 <p class="muted" id="product-grid-status">Memuatkan produk...</p>
@@ -207,48 +172,17 @@
 
         <section class="section stores" id="stores">
             <div class="section-header">
-                <h2>Find Our Store Near You</h2>
-                <p>Lokasi berhampiran untuk mencuba koleksi, dapatkan nasihat, dan ambil terus.</p>
+                <h2 id="stores-heading">Find Our Store Near You</h2>
+                <p id="stores-text">Lokasi berhampiran untuk mencuba koleksi, dapatkan nasihat, dan ambil terus.</p>
             </div>
-            <div class="store-grid">
-                <article class="store-card">
-                    <!-- Gambar store Bangi -->
-                    <img loading="lazy" src="images/store-bangi.jpg" alt="Telekung Maryam Bangi Sentral">
-                    <div class="store-body">
-                        <h3>Telekung Maryam Bangi Sentral</h3>
-                        <p>UG-02, Sunway Gandaria 2, Bandar Baru Bangi.</p>
-                        <p><strong>Hours:</strong> 10am – 7pm</p>
-                        <p><strong>Phone:</strong> +6010-959 8779</p>
-                    </div>
-                </article>
-                <article class="store-card">
-                    <!-- Gambar store Shah Alam -->
-                    <img loading="lazy" src="images/store-shahalam.jpg" alt="Telekung Maryam Shah Alam">
-                    <div class="store-body">
-                        <h3>Telekung Maryam Shah Alam</h3>
-                        <p>Pusat Komersial, Jalan Plumbum, Seksyen 7, Shah Alam.</p>
-                        <p><strong>Hours:</strong> 10am – 7pm</p>
-                        <p><strong>Phone:</strong> +6014-364 5611</p>
-                    </div>
-                </article>
-                <article class="store-card">
-                    <!-- Gambar store KL East -->
-                    <img loading="lazy" src="images/store-kl.jpg" alt="Telekung Maryam KL East">
-                    <div class="store-body">
-                        <h3>Telekung Maryam KL East</h3>
-                        <p>Jalan Melati Utama 4, 53100 Kuala Lumpur.</p>
-                        <p><strong>Hours:</strong> 10am – 10pm</p>
-                        <p><strong>Phone:</strong> +6011-6063 8779</p>
-                    </div>
-                </article>
-            </div>
+            <div class="store-grid" id="store-grid"></div>
         </section>
 
         <section class="section help" id="contact">
             <div class="help-cta">
-                <h2>How Can We Help?</h2>
-                <p>+6017 616 5683 · +6010 931 2089 · salam@telekungmaryam.com.my</p>
-                <p class="muted">Bantuan Ahad hingga Khamis, 9.00 AM – 5.00 PM MYT.</p>
+                <h2 id="help-heading">How Can We Help?</h2>
+                <p id="help-contact">+6017 616 5683 · +6010 931 2089 · salam@telekungmaryam.com.my</p>
+                <p class="muted" id="help-hours">Bantuan Ahad hingga Khamis, 9.00 AM – 5.00 PM MYT.</p>
             </div>
         </section>
     </main>
@@ -256,9 +190,9 @@
     <footer class="footer">
         <div class="footer-top">
             <div class="footer-brand">
-                <span class="brand-mark">Telekung Maryam</span>
-                <p>Becoming Better, Every Day.</p>
-                <p class="muted">Kami menginspirasi perjalanan peribadi & spiritual anda, dengan produk yang membantu anda menjadi versi terbaik.</p>
+                <span class="brand-mark" id="footer-brand-name">Telekung Maryam</span>
+                <p id="footer-tagline">Becoming Better, Every Day.</p>
+                <p class="muted" id="footer-description">Kami menginspirasi perjalanan peribadi & spiritual anda, dengan produk yang membantu anda menjadi versi terbaik.</p>
             </div>
             <div class="footer-links">
                 <div>
@@ -288,6 +222,8 @@
             <span>© 2026 All Rights Reserved.</span>
         </div>
     </footer>
+
+    <a class="admin-fab" href="admin.html" id="admin-fab">Admin</a>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <button class="back-to-top" id="back-to-top" aria-label="Kembali ke atas" hidden>

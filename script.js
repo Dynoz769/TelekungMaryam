@@ -19,12 +19,22 @@
 
     /* ---------- Image fallback (graceful placeholder instead of a broken icon) ---------- */
     const PALETTE = ['#1f6b57', '#155537', '#9df5ab'];
-    const placeholderDataUri = (label) => {
-        const text = (label || 'Telekung Maryam').trim();
-        const words = text.split(/\s+/);
-        let line1 = words.slice(0, Math.ceil(words.length / 2)).join(' ');
-        let line2 = words.slice(Math.ceil(words.length / 2)).join(' ');
+    // `compact` skips the descriptive two-line label -- used for images
+    // that already have real heading text overlaid on top of them (the
+    // hero background), so the placeholder doesn't draw a second,
+    // clashing caption underneath it.
+    const placeholderDataUri = (label, compact = false) => {
         const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        let labelSvg = '';
+        if (!compact) {
+            const text = (label || 'Telekung Maryam').trim();
+            const words = text.split(/\s+/);
+            const line1 = words.slice(0, Math.ceil(words.length / 2)).join(' ');
+            const line2 = words.slice(Math.ceil(words.length / 2)).join(' ');
+            labelSvg = `
+  <text x="300" y="250" font-family="Manrope, Arial, sans-serif" font-size="22" font-weight="700" fill="#ffffff" text-anchor="middle">${esc(line1)}</text>
+  <text x="300" y="280" font-family="Manrope, Arial, sans-serif" font-size="22" font-weight="700" fill="#ffffff" text-anchor="middle">${esc(line2)}</text>`;
+        }
         const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
   <defs>
@@ -35,9 +45,7 @@
   </defs>
   <rect width="600" height="400" fill="url(#g)"/>
   <circle cx="300" cy="150" r="46" fill="none" stroke="${PALETTE[2]}" stroke-width="3" opacity="0.85"/>
-  <path d="M270 168c8 14 52 14 60 0" fill="none" stroke="${PALETTE[2]}" stroke-width="3" stroke-linecap="round" opacity="0.85"/>
-  <text x="300" y="250" font-family="Manrope, Arial, sans-serif" font-size="22" font-weight="700" fill="#ffffff" text-anchor="middle">${esc(line1)}</text>
-  <text x="300" y="280" font-family="Manrope, Arial, sans-serif" font-size="22" font-weight="700" fill="#ffffff" text-anchor="middle">${esc(line2)}</text>
+  <path d="M270 168c8 14 52 14 60 0" fill="none" stroke="${PALETTE[2]}" stroke-width="3" stroke-linecap="round" opacity="0.85"/>${labelSvg}
   <text x="300" y="320" font-family="Manrope, Arial, sans-serif" font-size="14" fill="${PALETTE[2]}" text-anchor="middle" letter-spacing="2">TELEKUNG MARYAM</text>
 </svg>`.trim();
         return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
@@ -47,16 +55,145 @@
         root.querySelectorAll('img').forEach((img) => {
             if (!img.hasAttribute('loading')) img.loading = 'lazy';
             img.addEventListener('error', () => {
-                img.src = placeholderDataUri(img.alt);
+                img.src = placeholderDataUri(img.alt, img.classList.contains('hero-bg'));
                 img.classList.add('img-fallback');
             }, { once: true });
         });
     };
     attachImageFallback();
 
-    /* ---------- Products (rendered from products.json, edited via admin.html) ---------- */
     const escapeHtml = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+    /* ---------- Site content (text/images/custom blocks, edited via admin.html) ---------- */
+    const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el && value !== undefined && value !== null && value !== '') el.textContent = value;
+    };
+    const setAttr = (id, attr, value) => {
+        const el = document.getElementById(id);
+        if (el && value !== undefined && value !== null && value !== '') el.setAttribute(attr, value);
+    };
+
+    const renderStoryOrStoreGrid = (gridEl, items, kind) => {
+        if (!gridEl) return;
+        if (!Array.isArray(items) || items.length === 0) {
+            gridEl.innerHTML = '';
+            return;
+        }
+        if (kind === 'story') {
+            gridEl.innerHTML = items.map((s) => `
+                <article class="story-card">
+                    <img loading="lazy" src="${escapeHtml(s.image || '')}" alt="${escapeHtml(s.title)}">
+                    <div class="story-body">
+                        <h3>${escapeHtml(s.title)}</h3>
+                        <p>${escapeHtml(s.text)}</p>
+                        <a class="ghost-link" href="${escapeHtml(s.buttonHref || '#products')}">${escapeHtml(s.buttonText || 'Shop Now')}</a>
+                    </div>
+                </article>
+            `).join('');
+        } else {
+            gridEl.innerHTML = items.map((s) => `
+                <article class="store-card">
+                    <img loading="lazy" src="${escapeHtml(s.image || '')}" alt="${escapeHtml(s.name)}">
+                    <div class="store-body">
+                        <h3>${escapeHtml(s.name)}</h3>
+                        <p>${escapeHtml(s.address)}</p>
+                        <p><strong>Hours:</strong> ${escapeHtml(s.hours)}</p>
+                        <p><strong>Phone:</strong> ${escapeHtml(s.phone)}</p>
+                    </div>
+                </article>
+            `).join('');
+        }
+        attachImageFallback(gridEl);
+    };
+
+    const renderCustomSections = (sections) => {
+        const container = document.getElementById('custom-sections');
+        if (!container) return;
+        if (!Array.isArray(sections) || sections.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        container.innerHTML = sections.map((c) => `
+            <div class="custom-section-card">
+                <div class="custom-section-body">
+                    <h2>${escapeHtml(c.heading)}</h2>
+                    <p>${escapeHtml(c.text)}</p>
+                    ${c.buttonText ? `<a class="primary-btn" href="${escapeHtml(c.buttonHref || '#')}">${escapeHtml(c.buttonText)}</a>` : ''}
+                </div>
+                ${c.image ? `<div><img loading="lazy" src="${escapeHtml(c.image)}" alt="${escapeHtml(c.heading)}"></div>` : ''}
+            </div>
+        `).join('');
+        attachImageFallback(container);
+    };
+
+    const applyContent = (content) => {
+        if (!content) return;
+        const a = content.announcement || {};
+        setText('announce-text', a.text);
+        setText('announce-link', a.linkText);
+        setAttr('announce-link', 'href', a.linkHref);
+
+        const h = content.hero || {};
+        setText('hero-eyebrow', h.eyebrow);
+        setText('hero-heading', h.heading);
+        setText('hero-lede', h.lede);
+        setText('hero-button', h.buttonText);
+        setAttr('hero-button', 'href', h.buttonHref);
+        setAttr('hero-image', 'src', h.image);
+
+        const sh = content.storiesHeader || {};
+        setText('stories-heading', sh.heading);
+        setText('stories-text', sh.text);
+        renderStoryOrStoreGrid(document.getElementById('story-grid'), content.stories, 'story');
+
+        const g = content.gift || {};
+        setText('gift-eyebrow', g.eyebrow);
+        setText('gift-heading', g.heading);
+        setText('gift-text', g.text);
+        setText('gift-button', g.buttonText);
+        setAttr('gift-button', 'href', g.buttonHref);
+        setAttr('gift-image', 'src', g.image);
+
+        renderCustomSections(content.customSections);
+
+        const brandRow = document.getElementById('brand-row');
+        if (brandRow && Array.isArray(content.brands)) {
+            brandRow.innerHTML = content.brands.map((b) => `<span>${escapeHtml(b)}</span>`).join('');
+        }
+
+        const ph = content.productsHeader || {};
+        setText('products-heading', ph.heading);
+        setText('products-text', ph.text);
+
+        const sth = content.storesHeader || {};
+        setText('stores-heading', sth.heading);
+        setText('stores-text', sth.text);
+        renderStoryOrStoreGrid(document.getElementById('store-grid'), content.stores, 'store');
+
+        const help = content.help || {};
+        setText('help-heading', help.heading);
+        setText('help-contact', help.contactLine);
+        setText('help-hours', help.hoursText);
+
+        const f = content.footer || {};
+        setText('footer-brand-name', f.brandName);
+        setText('footer-tagline', f.tagline);
+        setText('footer-description', f.description);
+    };
+
+    const loadContent = async () => {
+        try {
+            const resp = await fetch('content.json', { cache: 'no-store' });
+            applyContent(await resp.json());
+        } catch (err) {
+            // Static fallback text already in the HTML covers this case --
+            // nothing else to do if content.json can't be reached.
+        }
+    };
+    loadContent();
+
+    /* ---------- Products (rendered from products.json, edited via admin.html) ---------- */
     const productGrid = document.getElementById('product-grid');
     const productGridStatus = document.getElementById('product-grid-status');
 

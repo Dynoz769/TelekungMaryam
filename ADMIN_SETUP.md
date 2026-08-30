@@ -61,9 +61,27 @@ Log masuk dengan `ADMIN_PASSWORD` yang awak set tadi. Sesi log masuk sah selama 
 - **Tambah produk baharu**: isi borang "Tambah Produk Baharu" di bawah, muat naik gambar (opsyenal), klik **Tambah Produk**.
 - **Padam produk**: klik **Padam** pada produk berkenaan (akan diminta pengesahan).
 
+### Kandungan Laman (bar pengumuman, hero, cerita, hadiah, kedai, footer, dll.)
+
+Bahagian **"Kandungan Laman"** di bawah senarai produk bagi awak edit **hampir semua teks & gambar** di laman utama:
+
+- Bar pengumuman (teks & pautan paling atas laman)
+- Hero (eyebrow, tajuk, penerangan, teks/URL butang, gambar)
+- Bahagian "Becoming Better, Every Day" (tajuk, teks, dan senarai kad — boleh tambah/padam kad)
+- Bahagian Hadiah
+- **Bahagian Custom** — admin boleh cipta bahagian tambahan sendiri (tajuk, teks, gambar, butang opsyenal), dipaparkan selepas Hadiah. Padam semua = tak dipaparkan.
+- Senarai jenama rakan niaga (boleh tambah/padam)
+- Header "Best Sellers"
+- Header & senarai kedai (boleh tambah/padam kedai)
+- Bahagian Bantuan (nombor telefon, e-mel, waktu)
+- Footer (nama jenama, tagline, penerangan)
+
+**Penting:** bahagian ni guna SATU butang **"Simpan Semua Perubahan"** di paling bawah — buat semua edit yang nak dulu (termasuk tambah/padam kad), lepas tu klik sekali sahaja untuk hantar semuanya. Setiap simpan = satu commit git ke `content.json`.
+
 ## ⚠️ Perkara penting
 
 - **`admin.html` boleh dilihat sesiapa** (ia laman statik biasa) — tapi tanpa password yang betul, mereka tak boleh buat apa-apa perubahan (server sentiasa sahkan password/token sebelum terima sebarang tulisan).
 - **Jangan kongsi `ADMIN_PASSWORD` atau `GITHUB_TOKEN`** — token tu ada akses tulis ke repo awak.
-- Setiap perubahan = satu commit git. Kalau tersilap (contoh: padam produk salah), pergi ke halaman **Commits** repo GitHub untuk lihat sejarah & revert kalau perlu.
+- Setiap perubahan = satu commit git. Kalau tersilap (contoh: padam produk/kad salah), pergi ke halaman **Commits** repo GitHub untuk lihat sejarah & revert kalau perlu.
 - Gambar yang dimuat naik disimpan terus dalam repo (folder `images/`) — hadkan saiz fail (maksimum 4MB setiap gambar) untuk elak repo jadi terlalu besar dari masa ke masa.
+- **Pembersihan gambar automatik** (bila gambar ditukar/dipadam) buat masa ini cuma berfungsi untuk produk (`api/admin/products.js`), belum untuk gambar dalam "Kandungan Laman" — gambar lama untuk hero/kad/kedai yang ditukar akan tertinggal dalam repo (tak menjejaskan fungsi, cuma guna sedikit storan lebih).
