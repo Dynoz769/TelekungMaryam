@@ -521,18 +521,23 @@ input:focus-visible {
     flex-wrap: wrap;
     color: #cfe8da;
 }
-.admin-shortcut {
+/* Admin shortcut, tucked at the bottom of the mobile nav drawer -- set
+   apart from the customer nav links with a divider and a quieter style. */
+.mobile-nav a.admin-shortcut {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    color: rgba(207, 232, 218, 0.55);
-    font-size: 0.82rem;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(230, 200, 159, 0.25);
+    color: rgba(230, 200, 159, 0.6);
+    font-size: 0.85rem;
     font-weight: 600;
-    transition: color 0.15s ease, opacity 0.15s ease;
+    transition: color 0.15s ease;
 }
 .admin-shortcut .icon {
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     stroke: currentColor;
     fill: none;
     stroke-width: 1.8;
