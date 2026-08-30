@@ -51,7 +51,14 @@
     "image": "images/gift.jpg"
   },
   "customSections": [],
-  "brands": ["Maybank", "Petronas", "AEON", "TV Alhijrah", "Affin", "Suria"],
+  "brands": [
+    "Maybank",
+    "Petronas",
+    "AEON",
+    "TV Alhijrah",
+    "Affin",
+    "Suria"
+  ],
   "productsHeader": {
     "heading": "Best Sellers Telekung",
     "text": "Pilihan utama pelanggan—dari premium lace hingga travel-friendly, sedia hadiah."
