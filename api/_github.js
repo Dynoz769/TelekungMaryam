@@ -72,4 +72,18 @@ async function putFile(path, content, message, sha) {
   return res.json();
 }
 
-module.exports = { getFile, putFile };
+// Deletes a file. Requires its current `sha` (get it from getFile first).
+// Resolves to null (not an error) if the file is already gone.
+async function deleteFile(path, message, sha) {
+  const { repo, token, branch } = repoInfo();
+  const res = await fetch(`${API}/repos/${repo}/contents/${encodePath(path)}`, {
+    method: 'DELETE',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, sha, branch }),
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`GitHub deleteFile ${path} failed: ${res.status} ${await res.text()}`);
+  return res.json();
+}
+
+module.exports = { getFile, putFile, deleteFile };
